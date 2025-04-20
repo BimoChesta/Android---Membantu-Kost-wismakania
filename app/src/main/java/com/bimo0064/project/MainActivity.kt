@@ -9,7 +9,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,7 +34,6 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
             AppEntryPoint()
         }
@@ -42,36 +43,48 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppEntryPoint() {
-    MaterialTheme {
-        val navController = rememberNavController()
-        val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-        val scope = rememberCoroutineScope()
+    val navController = rememberNavController()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
-        ModalNavigationDrawer(
-            drawerState = drawerState,
-            drawerContent = {
-                DrawerContent(onMenuClick = {
-                    scope.launch { drawerState.close() }
-                })
-            }
-        ) {
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = { Text("Wisma Kania") },
-                        navigationIcon = {
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            DrawerContent(onMenuClick = { route ->
+                navController.navigate(route)
+                scope.launch { drawerState.close() }
+            })
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             IconButton(onClick = {
                                 scope.launch { drawerState.open() }
                             }) {
                                 Icon(Icons.Default.Menu, contentDescription = "Menu")
                             }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Wisma Kania",
+                                fontSize = 20.sp,
+                                color = Color.Black,
+                                style = MaterialTheme.typography.titleLarge
+                            )
                         }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Green
                     )
-                }
-            ) { padding ->
-                Box(modifier = Modifier.padding(padding)) {
-                    AppNavGraph(navController = navController)
-                }
+                )
+            }
+        ) { padding ->
+            Box(modifier = Modifier.padding(padding)) {
+                AppNavGraph(navController = navController)
             }
         }
     }
@@ -92,10 +105,9 @@ fun DrawerContent(onMenuClick: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
             .padding(16.dp)
     ) {
-
+        // Header Logo dan Judul
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(bottom = 24.dp)
@@ -127,7 +139,7 @@ fun DrawerContent(onMenuClick: (String) -> Unit) {
         DrawerItem("Informasi Kost", Icons.Default.Info) { onMenuClick("informasi") }
         DrawerItem("Tambah Penghuni", Icons.Default.Info) { onMenuClick("tambah") }
         DrawerItem("Kelola Data P.Listrik", Icons.Default.Info) { onMenuClick("listrik") }
-        DrawerItem("Logout", Icons.Default.ExitToApp) { onMenuClick("logout") }
+        DrawerItem("Logout", Icons.Default.ExitToApp) { onMenuClick("home") } // Sesuaikan sesuai kebutuhan
     }
 }
 
@@ -143,7 +155,7 @@ fun DrawerItem(text: String, icon: ImageVector, onClick: () -> Unit) {
         Icon(
             imageVector = icon,
             contentDescription = text,
-            tint = Color.Unspecified,
+            tint = Color(0xFF2B9E9E),
             modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.width(16.dp))
