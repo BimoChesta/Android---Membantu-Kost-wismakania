@@ -1,8 +1,10 @@
 package com.bimo0064.project
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,6 +34,7 @@ import com.bimo0064.project.Screens.HomeScreen
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -40,6 +43,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppEntryPoint() {
@@ -78,7 +82,7 @@ fun AppEntryPoint() {
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Green
+                        containerColor = Color.Blue
                     )
                 )
             }
@@ -90,6 +94,7 @@ fun AppEntryPoint() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "home") {
@@ -104,8 +109,10 @@ fun AppNavGraph(navController: NavHostController) {
 fun DrawerContent(onMenuClick: (String) -> Unit) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+            .fillMaxHeight() // Mengisi tinggi
+            .width(300.dp) // Mengatur lebar drawer menjadi setengah
+            .padding(0.dp)
+            .background(Color.White)
     ) {
         // Header Logo dan Judul
         Row(
@@ -139,7 +146,7 @@ fun DrawerContent(onMenuClick: (String) -> Unit) {
         DrawerItem("Informasi Kost", Icons.Default.Info) { onMenuClick("informasi") }
         DrawerItem("Tambah Penghuni", Icons.Default.Info) { onMenuClick("tambah") }
         DrawerItem("Kelola Data P.Listrik", Icons.Default.Info) { onMenuClick("listrik") }
-        DrawerItem("Logout", Icons.Default.ExitToApp) { onMenuClick("home") } // Sesuaikan sesuai kebutuhan
+        DrawerItem("Logout", Icons.Default.ExitToApp) { onMenuClick("home") }
     }
 }
 
