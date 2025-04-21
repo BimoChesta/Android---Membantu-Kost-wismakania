@@ -82,9 +82,10 @@ fun AppEntryPoint() {
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Blue
+                        containerColor = Color.Cyan
                     )
                 )
+
             }
         ) { padding ->
             Box(modifier = Modifier.padding(padding)) {

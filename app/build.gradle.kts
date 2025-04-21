@@ -53,6 +53,8 @@ dependencies {
     implementation (libs.material3)
     implementation (libs.ui.tooling.preview)
     implementation (libs.androidx.navigation.compose.v240)
+    implementation (libs.androidx.datastore.preferences)
+    implementation (libs.gson)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
