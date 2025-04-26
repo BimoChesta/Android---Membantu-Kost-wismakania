@@ -1,4 +1,4 @@
-package com.Screens
+package com.bimo0064.project.Screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,7 +22,7 @@ fun InformasiScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFE6F0F2)) // Warna latar belakang halus
+            .background(Color(0xFFE6F0F2))
             .padding(16.dp)
     ) {
         // Gambar di atas

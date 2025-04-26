@@ -1,4 +1,4 @@
-package com.Screens
+package com.bimo0064.project.Screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

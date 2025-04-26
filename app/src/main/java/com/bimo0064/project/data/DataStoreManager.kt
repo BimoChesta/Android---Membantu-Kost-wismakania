@@ -2,6 +2,7 @@ package com.bimo0064.project.data
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.bimo0064.project.model.DayData
@@ -11,6 +12,9 @@ import kotlinx.coroutines.flow.first
 private val Context.dataStore by preferencesDataStore(name = "day_data_store")
 
 class DataStoreManager(private val context: Context) {
+
+    // Kunci untuk menyimpan saldo
+    private val saldoKey = intPreferencesKey("saldo")
 
     suspend fun saveDayData(month: String, year: String, dayDataMap: Map<String, DayData>) {
         val key = generateKey(month, year)
@@ -30,6 +34,19 @@ class DataStoreManager(private val context: Context) {
             DayData::class.java
         ).type
         return Gson().fromJson(json, type)
+    }
+
+    // Metode untuk menyimpan saldo
+    suspend fun saveBalance(saldo: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[saldoKey] = saldo
+        }
+    }
+
+    // Metode untuk memuat saldo
+    suspend fun loadBalance(): Int {
+        val preferences = context.dataStore.data.first()
+        return preferences[saldoKey] ?: 0 // Mengembalikan 0 jika saldo tidak ditemukan
     }
 
     private fun generateKey(month: String, year: String): String {

@@ -1,4 +1,4 @@
-package com.screens
+package com.bimo0064.project.Screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -48,21 +48,6 @@ fun KelolaDataListrikScreen() {
             .padding(16.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            DropdownMenuBulan(
-                selectedMonth = month,
-                onMonthSelected = { month = it }
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            OutlinedTextField(
-                value = year.toString(),
-                onValueChange = {
-                    if (it.length <= 4 && it.all { char -> char.isDigit() }) {
-                        year = it.toInt()
-                    }
-                },
-                label = { Text("Tahun") },
-                modifier = Modifier.width(100.dp)
-            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -91,7 +76,7 @@ fun KelolaDataListrikScreen() {
         )
     }
 
-        if (showDialog && selectedDay != null) {
+    if (showDialog && selectedDay != null) {
         InputNameDialog(
             selectedDay = selectedDay!!,
             inputName = inputName,
@@ -134,8 +119,8 @@ fun MonthNavigation(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(onClick = {
             val newIndex = (currentIndex - 1 + 12) % 12
@@ -149,7 +134,12 @@ fun MonthNavigation(
             )
         }
 
-        Spacer(modifier = Modifier.width(32.dp))
+        Text(
+            text = "$month $year",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
 
         IconButton(onClick = {
             val newIndex = (currentIndex + 1) % 12
@@ -288,44 +278,6 @@ private fun InputNameDialog(
             }
         }
     )
-}
-
-@Composable
-fun DropdownMenuBulan(
-    selectedMonth: String,
-    onMonthSelected: (String) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-    val months = listOf(
-        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
-    )
-
-    Box {
-        OutlinedTextField(
-            value = selectedMonth,
-            onValueChange = {},
-            modifier = Modifier
-                .width(150.dp)
-                .clickable { expanded = true },
-            label = { Text("Bulan") },
-            readOnly = true
-        )
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            months.forEach { month ->
-                DropdownMenuItem(
-                    onClick = {
-                        onMonthSelected(month)
-                        expanded = false
-                    },
-                    text = { Text(month) }
-                )
-            }
-        }
-    }
 }
 
 private fun getDaysInMonth(month: String, year: String): Int {

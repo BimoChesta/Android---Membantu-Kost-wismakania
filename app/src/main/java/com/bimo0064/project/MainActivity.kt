@@ -11,10 +11,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,10 +26,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.Screens.InformasiScreen
-import com.Screens.TambahPenghuniScreen
+import com.bimo0064.project.Screens.CekSaldoScreen
 import com.bimo0064.project.Screens.HomeScreen
-import com.screens.KelolaDataListrikScreen
+import com.bimo0064.project.Screens.InformasiScreen
+import com.bimo0064.project.Screens.KelolaDataListrikScreen
+import com.bimo0064.project.Screens.QrDetailScreen
+import com.bimo0064.project.Screens.TambahPenghuniScreen
+import com.bimo0064.project.data.DataStoreManager
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -52,6 +52,8 @@ fun AppEntryPoint() {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val dataStoreManager = remember { DataStoreManager(context) }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -87,11 +89,10 @@ fun AppEntryPoint() {
                         containerColor = Color.Cyan
                     )
                 )
-
             }
         ) { padding ->
             Box(modifier = Modifier.padding(padding)) {
-                AppNavGraph(navController = navController)
+                AppNavGraph(navController = navController, dataStoreManager = dataStoreManager)
             }
         }
     }
@@ -99,12 +100,14 @@ fun AppEntryPoint() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AppNavGraph(navController: NavHostController) {
+fun AppNavGraph(navController: NavHostController, dataStoreManager: DataStoreManager) {
     NavHost(navController = navController, startDestination = "home") {
         composable("home") { HomeScreen(navController) }
         composable("informasi") { InformasiScreen() }
         composable("tambah") { TambahPenghuniScreen() }
+        composable("cek_saldo") { CekSaldoScreen(dataStoreManager) }
         composable("listrik") { KelolaDataListrikScreen() }
+        composable("qr_detail") { QrDetailScreen(navController) } // Corrected route name
     }
 }
 
@@ -117,7 +120,6 @@ fun DrawerContent(onMenuClick: (String) -> Unit) {
             .padding(0.dp)
             .background(Color.White)
     ) {
-        // Header Logo dan Judul
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(bottom = 24.dp)
@@ -149,6 +151,7 @@ fun DrawerContent(onMenuClick: (String) -> Unit) {
         DrawerItem("Informasi Kost", Icons.Default.Info) { onMenuClick("informasi") }
         DrawerItem("Tambah Penghuni", Icons.Default.Person) { onMenuClick("tambah") }
         DrawerItem("Kelola Data P.Listrik", Icons.Default.Home) { onMenuClick("listrik") }
+        DrawerItem("Cek saldo kas", Icons.Default.Money) { onMenuClick("cek_saldo") }
         DrawerItem("Logout", Icons.Default.ExitToApp) { onMenuClick("home") }
     }
 }

@@ -16,7 +16,9 @@ materialIconsCore = "<latest-version>"
 materialIconsExtended = "<latest-version>"
 navigationCompose = "2.8.9"
 navigationComposeVersion = "2.4.0"
+ui = "1.8.0"
 uiToolingPreview = "1.7.8"
+foundationLayoutAndroid = "1.7.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -41,7 +43,9 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
+androidx-foundation-layout-android = { group = "androidx.compose.foundation", name = "foundation-layout-android", version.ref = "foundationLayoutAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
