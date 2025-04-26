@@ -14,6 +14,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,9 +30,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.Screens.InformasiScreen
-import com.Screens.KelolaDataPListrikScreen
 import com.Screens.TambahPenghuniScreen
 import com.bimo0064.project.Screens.HomeScreen
+import com.screens.KelolaDataListrikScreen
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -102,7 +104,7 @@ fun AppNavGraph(navController: NavHostController) {
         composable("home") { HomeScreen(navController) }
         composable("informasi") { InformasiScreen() }
         composable("tambah") { TambahPenghuniScreen() }
-        composable("listrik") { KelolaDataPListrikScreen() }
+        composable("listrik") { KelolaDataListrikScreen() }
     }
 }
 
@@ -110,8 +112,8 @@ fun AppNavGraph(navController: NavHostController) {
 fun DrawerContent(onMenuClick: (String) -> Unit) {
     Column(
         modifier = Modifier
-            .fillMaxHeight() // Mengisi tinggi
-            .width(300.dp) // Mengatur lebar drawer menjadi setengah
+            .fillMaxHeight()
+            .width(300.dp)
             .padding(0.dp)
             .background(Color.White)
     ) {
@@ -145,8 +147,8 @@ fun DrawerContent(onMenuClick: (String) -> Unit) {
         )
 
         DrawerItem("Informasi Kost", Icons.Default.Info) { onMenuClick("informasi") }
-        DrawerItem("Tambah Penghuni", Icons.Default.Info) { onMenuClick("tambah") }
-        DrawerItem("Kelola Data P.Listrik", Icons.Default.Info) { onMenuClick("listrik") }
+        DrawerItem("Tambah Penghuni", Icons.Default.Person) { onMenuClick("tambah") }
+        DrawerItem("Kelola Data P.Listrik", Icons.Default.Home) { onMenuClick("listrik") }
         DrawerItem("Logout", Icons.Default.ExitToApp) { onMenuClick("home") }
     }
 }
@@ -157,7 +159,7 @@ fun DrawerItem(text: String, icon: ImageVector, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .padding(vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(

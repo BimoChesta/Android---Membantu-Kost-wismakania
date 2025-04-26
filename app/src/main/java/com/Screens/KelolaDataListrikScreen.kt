@@ -1,14 +1,13 @@
-package com.Screens
+package com.screens
 
-import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,31 +18,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.flow.first
+import com.bimo0064.project.data.DataStoreManager
+import com.bimo0064.project.model.DayData
 import kotlinx.coroutines.launch
 
-private val Context.dataStore by preferencesDataStore(name = "day_data_store")
-private val DAY_DATA_KEY = stringPreferencesKey("day_data_json")
-
-data class DayData(
-    val name: String,
-    val isPaid: Boolean
-)
-
-@RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun KelolaDataPListrikScreen() {
+fun KelolaDataListrikScreen() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val dataStoreManager = remember { DataStoreManager(context) }
 
-    var month by remember { mutableStateOf("Januari") }
-    var yearText by remember { mutableStateOf("2025") }
+    var month by remember { mutableStateOf("April") }
+    var year by remember { mutableStateOf(2025) }
     val dayDataMap = remember { mutableStateMapOf<String, DayData>() }
 
     var showDialog by remember { mutableStateOf(false) }
@@ -51,18 +37,10 @@ fun KelolaDataPListrikScreen() {
     var inputName by remember { mutableStateOf("") }
     var isPaid by remember { mutableStateOf(false) }
 
-    // Load DataStore on start
-    LaunchedEffect(Unit) {
-        val json = context.dataStore.data.first()[DAY_DATA_KEY]
-        json?.let {
-            val type = object : TypeToken<Map<String, DayData>>() {}.type
-            val map: Map<String, DayData> = Gson().fromJson(it, type)
-            dayDataMap.putAll(map)
-        }
+    LaunchedEffect(month, year) {
+        dayDataMap.clear()
+        dayDataMap.putAll(dataStoreManager.loadDayData(month, year.toString()))
     }
-
-    val daysInMonth = 31
-    var dayCounter = 1
 
     Column(
         modifier = Modifier
@@ -76,8 +54,12 @@ fun KelolaDataPListrikScreen() {
             )
             Spacer(modifier = Modifier.width(16.dp))
             OutlinedTextField(
-                value = yearText,
-                onValueChange = { yearText = it },
+                value = year.toString(),
+                onValueChange = {
+                    if (it.length <= 4 && it.all { char -> char.isDigit() }) {
+                        year = it.toInt()
+                    }
+                },
                 label = { Text("Tahun") },
                 modifier = Modifier.width(100.dp)
             )
@@ -85,33 +67,31 @@ fun KelolaDataPListrikScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Column {
-            repeat(5) {
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    repeat(7) {
-                        if (dayCounter <= daysInMonth) {
-                            val key = dayCounter.toString()
-                            DayBox(
-                                day = dayCounter,
-                                data = dayDataMap[key],
-                                onClick = {
-                                    selectedDay = dayCounter
-                                    inputName = dayDataMap[key]?.name ?: ""
-                                    isPaid = dayDataMap[key]?.isPaid ?: false
-                                    showDialog = true
-                                }
-                            )
-                            dayCounter++
-                        } else {
-                            Spacer(modifier = Modifier.weight(1f))
-                        }
-                    }
-                }
+        CalendarContent(
+            month = month,
+            year = year.toString(),
+            dayDataMap = dayDataMap,
+            onDayClicked = { day ->
+                selectedDay = day
+                inputName = dayDataMap[day.toString()]?.name ?: ""
+                isPaid = dayDataMap[day.toString()]?.isPaid ?: false
+                showDialog = true
             }
-        }
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        MonthNavigation(
+            month = month,
+            year = year,
+            onMonthYearChange = { newMonth, newYear ->
+                month = newMonth
+                year = newYear
+            }
+        )
     }
 
-    if (showDialog && selectedDay != null) {
+        if (showDialog && selectedDay != null) {
         InputNameDialog(
             selectedDay = selectedDay!!,
             inputName = inputName,
@@ -124,12 +104,9 @@ fun KelolaDataPListrikScreen() {
                         val key = day.toString()
                         dayDataMap[key] = DayData(inputName, isPaid)
 
-                        // Save ke DataStore
-                        val json = Gson().toJson(dayDataMap)
+                        // Simpan perubahan
                         scope.launch {
-                            context.dataStore.edit { prefs ->
-                                prefs[DAY_DATA_KEY] = json
-                            }
+                            dataStoreManager.saveDayData(month, year.toString(), dayDataMap)
                         }
                     }
                 }
@@ -137,6 +114,96 @@ fun KelolaDataPListrikScreen() {
             },
             onDismiss = { showDialog = false }
         )
+    }
+}
+
+@Composable
+fun MonthNavigation(
+    month: String,
+    year: Int,
+    onMonthYearChange: (String, Int) -> Unit
+) {
+    val months = listOf(
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    )
+
+    val currentIndex = months.indexOf(month)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = {
+            val newIndex = (currentIndex - 1 + 12) % 12
+            val newMonth = months[newIndex]
+            val newYear = if (newIndex == 11) year - 1 else year
+            onMonthYearChange(newMonth, newYear)
+        }) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Previous Month"
+            )
+        }
+
+        Spacer(modifier = Modifier.width(32.dp))
+
+        IconButton(onClick = {
+            val newIndex = (currentIndex + 1) % 12
+            val newMonth = months[newIndex]
+            val newYear = if (newIndex == 0) year + 1 else year
+            onMonthYearChange(newMonth, newYear)
+        }) {
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                contentDescription = "Next Month"
+            )
+        }
+    }
+}
+
+
+@Composable
+private fun CalendarContent(
+    month: String,
+    year: String,
+    dayDataMap: Map<String, DayData>,
+    onDayClicked: (Int) -> Unit
+) {
+    val daysInMonth = getDaysInMonth(month, year)
+    val columns = 5
+    val rows = (daysInMonth + columns - 1) / columns
+
+    Column {
+        var dayCounter = 1
+        repeat(rows) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                repeat(columns) {
+                    if (dayCounter <= daysInMonth) {
+                        val key = dayCounter.toString()
+                        DayBox(
+                            day = dayCounter,
+                            data = dayDataMap[key],
+                            onClick = { onDayClicked(dayCounter) }
+                        )
+                        dayCounter++
+                    } else {
+                        Spacer(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(60.dp)
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+        }
     }
 }
 
@@ -149,12 +216,12 @@ private fun DayBox(
     val bgColor = when {
         data?.isPaid == true -> Color.Red
         data != null -> Color.Cyan
-        else -> Color.Transparent
+        else -> Color.White
     }
 
     Box(
         modifier = Modifier
-            .size(55.dp)
+            .size(60.dp)
             .padding(4.dp)
             .background(color = bgColor, shape = RoundedCornerShape(8.dp))
             .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
@@ -168,7 +235,12 @@ private fun DayBox(
                 fontSize = 12.sp
             )
             if (data?.isPaid == true) {
-                Icon(Icons.Default.Check, contentDescription = "Sudah Bayar", tint = Color.White)
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Sudah Bayar",
+                    tint = Color.White,
+                    modifier = Modifier.size(16.dp)
+                )
             }
         }
     }
@@ -254,4 +326,18 @@ fun DropdownMenuBulan(
             }
         }
     }
+}
+
+private fun getDaysInMonth(month: String, year: String): Int {
+    val yearInt = year.toIntOrNull() ?: 2025
+    return when (month) {
+        "Januari", "Maret", "Mei", "Juli", "Agustus", "Oktober", "Desember" -> 31
+        "April", "Juni", "September", "November" -> 30
+        "Februari" -> if (isLeapYear(yearInt)) 29 else 28
+        else -> 31
+    }
+}
+
+private fun isLeapYear(year: Int): Boolean {
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
 }
