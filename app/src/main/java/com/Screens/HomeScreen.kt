@@ -5,7 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -13,12 +13,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.bimo0064.project.R
+import com.bimo0064.project.data.DataStoreManager
 
 @Composable
-fun HomeScreen(navController: NavHostController) {
+fun HomeScreen(navController: NavHostController, dataStoreManager: DataStoreManager) {
+    var saldo by remember { mutableStateOf(0) }
+    val scope = rememberCoroutineScope()
+
+    // Memuat saldo dari DataStore saat komponen pertama kali dimuat
+    LaunchedEffect(Unit) {
+        saldo = dataStoreManager.loadBalance()
+    }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFE0E0E0) // Light background color to match the image
+        color = Color(0xFFE0E0E0)
     ) {
         Column(
             modifier = Modifier
@@ -27,23 +36,29 @@ fun HomeScreen(navController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Top section with "Cek Saldo" button
+            Text(
+                text = "Saldo Uang Kas",
+                style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black)
+            )
+            Text(
+                text = "Rp. $saldo",
+                style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black),
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+
+            // Tombol untuk navigasi ke CekSaldoScreen
             Button(
                 onClick = {
                     navController.navigate("cek_saldo")
                 },
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .height(56.dp)
+                shape = RoundedCornerShape(0.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+                modifier = Modifier.fillMaxWidth(0.8f).height(56.dp)
             ) {
-                Text(
-                    text = "Cek Saldo",
-                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
-                )
+                Text(text = "Cek Saldo", style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black))
             }
 
-            // Middle section with info buttons
+            // Bagian tengah dengan tombol informasi
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -52,29 +67,31 @@ fun HomeScreen(navController: NavHostController) {
                     onClick = {
                         navController.navigate("informasi")
                     },
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(0.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
                     modifier = Modifier.fillMaxWidth(0.8f).height(56.dp)
                 ) {
-                    Text(text = "Informasi Kost", style = MaterialTheme.typography.bodyLarge)
+                    Text(text = "Informasi Kost", style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black))
                 }
 
                 Button(
                     onClick = {
                         navController.navigate("listrik")
                     },
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(0.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
                     modifier = Modifier.fillMaxWidth(0.8f).height(56.dp)
                 ) {
-                    Text(text = "Cek Pembayaran Listrik", style = MaterialTheme.typography.bodyLarge)
+                    Text(text = "Cek Pembayaran Listrik", style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black))
                 }
             }
 
-            // Bottom section with clickable QR code image
+            // Gambar QR code yang dapat diklik
             Image(
-                painter = painterResource(id = R.drawable.scan), // Replace with actual QR code resource
+                painter = painterResource(id = R.drawable.scan),
                 contentDescription = "QR Code",
                 modifier = Modifier
-                    .size(180.dp)
+                    .size(50.dp)
                     .clickable {
                         navController.navigate("qr_detail")
                     }

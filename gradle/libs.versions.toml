@@ -1,5 +1,7 @@
 [versions]
 agp = "8.8.1"
+androidxMaterial3 = "1.0.0"
+androidxNavigationCompose = "2.5.0"
 datastorePreferences = "1.1.4"
 gson = "2.10.1"
 kotlin = "2.0.0"
@@ -19,14 +21,18 @@ navigationComposeVersion = "2.4.0"
 ui = "1.8.0"
 uiToolingPreview = "1.7.8"
 foundationLayoutAndroid = "1.7.2"
+uiVersion = "1.4.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "materialIconsCore" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+androidx-material3-v100 = { module = "androidx.compose.material3:material3", version.ref = "androidxMaterial3" }
 androidx-material3-vlatestversion = { module = "androidx.compose.material3:material3", version.ref = "material3Version" }
 androidx-navigation-compose-v240 = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
+androidx-navigation-compose-v250 = { module = "androidx.navigation:navigation-compose", version.ref = "androidxNavigationCompose" }
+androidx-ui-v140 = { module = "androidx.compose.ui:ui", version.ref = "uiVersion" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

@@ -102,12 +102,12 @@ fun AppEntryPoint() {
 @Composable
 fun AppNavGraph(navController: NavHostController, dataStoreManager: DataStoreManager) {
     NavHost(navController = navController, startDestination = "home") {
-        composable("home") { HomeScreen(navController) }
+        composable("home") { HomeScreen(navController, dataStoreManager) }
         composable("informasi") { InformasiScreen() }
         composable("tambah") { TambahPenghuniScreen() }
         composable("cek_saldo") { CekSaldoScreen(dataStoreManager) }
         composable("listrik") { KelolaDataListrikScreen() }
-        composable("qr_detail") { QrDetailScreen(navController) } // Corrected route name
+        composable("qr_detail") { QrDetailScreen(navController) }
     }
 }
 
