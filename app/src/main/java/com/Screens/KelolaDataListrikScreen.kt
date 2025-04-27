@@ -47,11 +47,30 @@ fun KelolaDataListrikScreen() {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        // History bagian atas
+        if (dayDataMap.isNotEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                Text(
+                    text = "Riwayat Input:",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                dayDataMap.entries.sortedBy { it.key.toInt() }.forEach { (day, data) ->
+                    Text(
+                        text = "Tanggal $day - ${data.name} (${if (data.isPaid) "Sudah Bayar" else "Belum Bayar"})",
+                        fontSize = 14.sp
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
+        // Kalender
         CalendarContent(
             month = month,
             year = year.toString(),
@@ -66,6 +85,7 @@ fun KelolaDataListrikScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Navigasi bulan
         MonthNavigation(
             month = month,
             year = year,
@@ -155,7 +175,6 @@ fun MonthNavigation(
     }
 }
 
-
 @Composable
 private fun CalendarContent(
     month: String,
@@ -168,21 +187,20 @@ private fun CalendarContent(
     val rows = (daysInMonth + columns - 1) / columns
 
     Column {
-        var dayCounter = 1
-        repeat(rows) {
+        (0 until rows).forEach { row ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                repeat(columns) {
-                    if (dayCounter <= daysInMonth) {
-                        val key = dayCounter.toString()
+                (0 until columns).forEach { column ->
+                    val dayNumber = row * columns + column + 1
+                    if (dayNumber <= daysInMonth) {
+                        val key = dayNumber.toString()
                         DayBox(
-                            day = dayCounter,
+                            day = dayNumber,
                             data = dayDataMap[key],
-                            onClick = { onDayClicked(dayCounter) }
+                            onClick = { onDayClicked(dayNumber) }
                         )
-                        dayCounter++
                     } else {
                         Spacer(
                             modifier = Modifier
@@ -197,6 +215,7 @@ private fun CalendarContent(
     }
 }
 
+
 @Composable
 private fun DayBox(
     day: Int,
@@ -205,7 +224,7 @@ private fun DayBox(
 ) {
     val bgColor = when {
         data?.isPaid == true -> Color.Red
-        data != null -> Color.Cyan
+        data != null -> Color.Cyan // Biru Muda kalau hanya isi nama
         else -> Color.White
     }
 
@@ -220,7 +239,7 @@ private fun DayBox(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = data?.name ?: day.toString(),
+                text = data?.name.takeIf { !it.isNullOrEmpty() } ?: day.toString(),
                 textAlign = TextAlign.Center,
                 fontSize = 12.sp
             )
