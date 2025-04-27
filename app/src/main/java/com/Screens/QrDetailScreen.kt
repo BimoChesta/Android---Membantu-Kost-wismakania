@@ -2,9 +2,9 @@ package com.bimo0064.project.Screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -12,9 +12,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.bimo0064.project.R
+import com.bimo0064.project.data.DataStoreManager
+import com.bimo0064.project.model.Pembayaran
+import kotlinx.coroutines.launch
 
 @Composable
-fun QrDetailScreen(navController: NavHostController) {
+fun QrDetailScreen(navController: NavHostController, dataStoreManager: DataStoreManager) {
+    var nama by remember { mutableStateOf("") }
+    var kamar by remember { mutableStateOf("") }
+    var sudahBayar by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color(0xFFE0E0E0)
@@ -26,38 +34,70 @@ fun QrDetailScreen(navController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-
             Image(
-                painter = painterResource(id = R.drawable.qr), // Replace with actual QR code resource
+                painter = painterResource(id = R.drawable.qr),
                 contentDescription = "QR Code",
-                modifier = Modifier.size(180.dp)
+                modifier = Modifier.size(300.dp)
             )
 
-            Button(
-                onClick = {
-                    navController.navigate("data_pembayaran")
-                },
-                shape = RoundedCornerShape(16.dp),
+            OutlinedTextField(
+                value = nama,
+                onValueChange = { nama = it },
+                label = { Text("Nama") },
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
-                    .height(56.dp)
-                    .padding(top = 16.dp)
+                    .padding(vertical = 8.dp)
+            )
+
+            OutlinedTextField(
+                value = kamar,
+                onValueChange = { kamar = it },
+                label = { Text("Kamar") },
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .padding(vertical = 8.dp)
+            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .padding(vertical = 8.dp)
+                    .toggleable(
+                        value = sudahBayar,
+                        onValueChange = { sudahBayar = it }
+                    )
             ) {
-                Text(text = "Masukkan data pembayaran", style = MaterialTheme.typography.bodyLarge)
+                Checkbox(
+                    checked = sudahBayar,
+                    onCheckedChange = { sudahBayar = it }
+                )
+                Text(text = "Sudah Bayar", modifier = Modifier.padding(start = 8.dp))
             }
 
-            // Back button
             Button(
                 onClick = {
-                    navController.popBackStack()
+                    if (nama.isNotBlank() && kamar.isNotBlank()) {
+                        val pembayaran = Pembayaran(
+                            nama = nama,
+                            kamar = kamar,
+                            bukti = if (sudahBayar) "Sudah Bayar" else "Belum Bayar"
+                        )
+                        scope.launch {
+                            dataStoreManager.savePayment(pembayaran)
+                            nama = ""
+                            kamar = ""
+                            sudahBayar = false
+                            navController.navigateUp() // Kembali ke screen sebelumnya
+                        }
+                    }
                 },
-                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .height(56.dp)
                     .padding(top = 16.dp)
+                    .fillMaxWidth(0.6f)
             ) {
-                Text(text = "Kembali", style = MaterialTheme.typography.bodyLarge)
+                Text(text = "Simpan", color = Color.White)
             }
         }
     }

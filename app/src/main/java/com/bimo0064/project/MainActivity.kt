@@ -107,7 +107,7 @@ fun AppNavGraph(navController: NavHostController, dataStoreManager: DataStoreMan
         composable("tambah") { TambahPenghuniScreen() }
         composable("cek_saldo") { CekSaldoScreen(dataStoreManager) }
         composable("listrik") { KelolaDataListrikScreen() }
-        composable("qr_detail") { QrDetailScreen(navController) }
+        composable("qr_detail") { QrDetailScreen(navController, dataStoreManager) }
     }
 }
 

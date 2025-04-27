@@ -1,6 +1,8 @@
 package com.bimo0064.project.Screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -9,17 +11,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.bimo0064.project.data.DataStoreManager
+import com.bimo0064.project.model.Pembayaran
 import kotlinx.coroutines.launch
 
 @Composable
 fun CekSaldoScreen(dataStoreManager: DataStoreManager) {
-    var saldo by remember { mutableStateOf(0) }
+    var saldo by remember { mutableIntStateOf(0) }
     var inputSaldo by remember { mutableStateOf("") }
+    var payments by remember { mutableStateOf(listOf<Pembayaran>()) }
     val scope = rememberCoroutineScope()
 
-    // Memuat saldo dari DataStore saat komponen pertama kali dimuat
     LaunchedEffect(Unit) {
         saldo = dataStoreManager.loadBalance()
+        payments = dataStoreManager.loadPayments()
     }
 
     Surface(
@@ -31,7 +35,7 @@ fun CekSaldoScreen(dataStoreManager: DataStoreManager) {
                 .fillMaxSize()
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.Top
         ) {
             Text(
                 text = "Uang Kas Wisma Kania",
@@ -44,76 +48,102 @@ fun CekSaldoScreen(dataStoreManager: DataStoreManager) {
                 modifier = Modifier.padding(vertical = 16.dp)
             )
 
-            // Menampilkan input saldo
             Text(
                 text = "Saldo Baru: $inputSaldo",
                 style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black),
                 modifier = Modifier.padding(vertical = 16.dp)
             )
 
-            // Tombol untuk angka 1-9
             Column {
                 for (row in 0..2) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        for (col in 1..3) {
-                            val number = row * 3 + col
-                            if (number <= 9) {
-                                Button(
-                                    onClick = { inputSaldo += number.toString() },
-                                    shape = RoundedCornerShape(100.dp), // Kotak
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-                                    modifier = Modifier.size(60.dp)
-                                ) {
-                                    Text(text = number.toString(), style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black))
-                                }
+                        for (col in 0..2) {
+                            val number = 9 - (row * 3 + col)
+                            Button(
+                                onClick = { inputSaldo += number.toString() },
+                                shape = RoundedCornerShape(100.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+                                modifier = Modifier.size(60.dp)
+                            ) {
+                                Text(
+                                    text = number.toString(),
+                                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black)
+                                )
                             }
                         }
                     }
                 }
             }
 
-            // Jarak antara tombol angka dan tombol Delete/OK
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Tombol untuk menghapus dan mengonfirmasi
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(
-                    onClick = { if (inputSaldo.isNotEmpty()) inputSaldo = inputSaldo.dropLast(1) }, // Menghapus angka terakhir
-                    shape = RoundedCornerShape(100.dp), // Kotak
+                    onClick = { if (inputSaldo.isNotEmpty()) inputSaldo = inputSaldo.dropLast(1) },
+                    shape = RoundedCornerShape(100.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-                    modifier = Modifier
-                        .weight(1f) // Memperluas tombol untuk memanjang
-                        .height(56.dp) // Tinggi tombol
-                        .padding(4.dp) // Jarak antar tombol
+                    modifier = Modifier.height(56.dp)
                 ) {
-                    Text(text = "Hapus", style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black))
+                    Text("Hapus", style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black))
+                }
+
+                Button(
+                    onClick = { inputSaldo += "0" },
+                    shape = RoundedCornerShape(100.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+                    modifier = Modifier.size(65.dp)
+                ) {
+                    Text("0", style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black))
                 }
 
                 Button(
                     onClick = {
                         val newSaldo = inputSaldo.toIntOrNull()
                         if (newSaldo != null && newSaldo >= 0) {
-                            saldo = newSaldo // Update saldo
-                            inputSaldo = "" // Reset input
+                            saldo = newSaldo
+                            inputSaldo = ""
                             scope.launch {
-                                dataStoreManager.saveBalance(saldo) // Simpan saldo ke DataStore
+                                dataStoreManager.saveBalance(saldo)
                             }
                         }
                     },
-                    shape = RoundedCornerShape(0.dp), // Kotak
+                    shape = RoundedCornerShape(100.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-                    modifier = Modifier
-                        .weight(1f) // Memperluas tombol untuk memanjang
-                        .height(56.dp) // Tinggi tombol
-                        .padding(4.dp) // Jarak antar tombol
+                    modifier = Modifier.height(56.dp)
                 ) {
-                    Text(text = "OK", style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black))
+                    Text("OK", style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Riwayat Pembayaran",
+                style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black),
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+
+            LazyColumn {
+                items(payments) { pembayaran ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(text = "Nama: ${pembayaran.nama}")
+                            Text(text = "Kamar: ${pembayaran.kamar}")
+                            Text(text = "Status: ${pembayaran.bukti}")
+                        }
+                    }
                 }
             }
         }
