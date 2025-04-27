@@ -3,7 +3,9 @@ package com.bimo0064.project.Screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,93 +26,104 @@ fun InformasiScreen() {
             .fillMaxSize()
             .background(Color(0xFFE6F0F2))
             .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
-        // Gambar di atas
+        // Gambar Logo
         Image(
             painter = painterResource(id = R.drawable.logobiasa),
-            contentDescription = "Gambar Rumah Kost",
+            contentDescription = "Logo Kost",
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
-                .padding(bottom = 16.dp)
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color.White)
         )
 
-        // Baris dua kolom
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Baris 2 Kolom
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Kolom 1
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                CardInfo(title = "Alamat Kost", content = """
-                    Wisma Kania, Gang Amdasari, RT.5/RW.1,
-                    Kampung Managa Dua, Dayeuhkolot (Belakang mixue sukapura)
-                    DAYEUHKOLOT, KAB.BANDUNG, JAWA BARAT, ID 40257
-                """.trimIndent())
+            Column(modifier = Modifier.weight(1f)) {
+                InfoCard(
+                    title = "Alamat Kost",
+                    content = """
+                        Wisma Kania, Gang Amdasari, RT.5/RW.1,
+                        Kampung Managa Dua, Dayeuhkolot (Belakang Mixue Sukapura)
+                        DAYEUHKOLOT, KAB.BANDUNG, JAWA BARAT, ID 40257
+                    """.trimIndent()
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                CardInfo(title = "Peraturan Kost", content = """
-                    1. Setiap keluar masuk harap kunci kembali pagar dengan gembok pagar.
-                    2. Tidak boleh membawa pasangan jika tidak mau mengerti tutornannya.
-                    3. Setelah menggunakan dapur harap dibersihkan langsung.
-                    4. Buang sampah pada tempatnya.
-                """.trimIndent())
+                InfoCard(
+                    title = "Peraturan Kost",
+                    content = """
+                        1. Setiap keluar masuk harap kunci kembali pagar dengan gembok.
+                        2. Tidak membawa pasangan tanpa izin.
+                        3. Bersihkan dapur setelah pakai.
+                        4. Buang sampah pada tempatnya.
+                    """.trimIndent()
+                )
             }
 
             // Kolom 2
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                CardInfo(title = "Fasilitas Kost dan Kewajiban Penghuni", content = """
-                    Fasilitas Kamar:
-                    1. kasur
-                    2. headboard kasur
-                    3. bantal & guling
-                    4. meja
-                    5. lemari
-                    6. kamar mandi dalam
-                    7. ember & gayung
+            Column(modifier = Modifier.weight(1f)) {
+                InfoCard(
+                    title = "Fasilitas & Kewajiban",
+                    content = """
+                        Fasilitas Kamar:
+                        - Kasur
+                        - Headboard kasur
+                        - Bantal & Guling
+                        - Meja
+                        - Lemari
+                        - Kamar mandi dalam
+                        - Ember & Gayung
 
-                    Fasilitas Umum:
-                    1. dapur
-                    2. alat masak
-                    3. kulkas
-                    4. rooftop
-                    5. jemuran pakaian
-                    6. ruang santai
+                        Fasilitas Umum:
+                        - Dapur
+                        - Alat masak
+                        - Kulkas
+                        - Rooftop
+                        - Jemuran pakaian
+                        - Ruang santai
 
-                    Kewajiban Penghuni Kost:
-                    1. membayar listrik setiap bulan, Bor/bulanan
-                """.trimIndent())
+                        Kewajiban:
+                        - Membayar listrik setiap bulan
+                    """.trimIndent()
+                )
             }
         }
     }
 }
 
 @Composable
-fun CardInfo(title: String, content: String) {
+fun InfoCard(title: String, content: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White, shape = RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color.White)
             .padding(16.dp)
     ) {
         Text(
             text = title,
-            color = Color(0xFF009999),
+            color = Color(0xFF2B9E9E),
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            fontSize = 18.sp,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         Text(
             text = content,
-            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
-            color = Color.DarkGray
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontSize = 14.sp,
+                color = Color.DarkGray
+            )
         )
     }
 }

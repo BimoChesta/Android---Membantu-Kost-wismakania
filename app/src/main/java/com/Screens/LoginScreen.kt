@@ -1,6 +1,7 @@
 package com.bimo0064.project.Screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,42 +15,65 @@ import com.bimo0064.project.data.DataStoreManager
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavHostController, dataStoreManager: DataStoreManager) {
+fun LoginScreen(
+    onLoginSuccess: () -> Unit,
+    navController: NavHostController,
+    dataStoreManager: DataStoreManager
+) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope() // <-- Di sini tempat yang benar!
+    val coroutineScope = rememberCoroutineScope()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFE0E0E0)
+        color = Color.White
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(text = "Login", fontSize = 24.sp, color = Color.Black)
+            Text(
+                text = "Login",
+                fontSize = 28.sp,
+                color = Color.Black,
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.padding(bottom = 32.dp)
+            )
 
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
                 label = { Text("Username") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp)
             )
+
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Password") },
                 visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp)
             )
 
             if (errorMessage.isNotBlank()) {
-                Text(text = errorMessage, color = Color.Red)
+                Text(
+                    text = errorMessage,
+                    color = Color.Red,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
             }
 
             Button(
@@ -65,16 +89,30 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavHostController, da
                         isLoading = false
                     }
                 },
-                modifier = Modifier.padding(top = 16.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF2B9E9E),
+                    contentColor = Color.White
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
                 enabled = !isLoading
             ) {
-                Text(if (isLoading) "Loading..." else "Login")
+                Text(
+                    text = if (isLoading) "Loading..." else "Login",
+                    fontSize = 18.sp
+                )
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             TextButton(onClick = { navController.navigate("register") }) {
-                Text(text = "Belum punya akun? Registrasi", color = Color.Blue)
+                Text(
+                    text = "Belum punya akun? Registrasi",
+                    color = Color(0xFF2B9E9E),
+                    fontSize = 16.sp
+                )
             }
         }
     }

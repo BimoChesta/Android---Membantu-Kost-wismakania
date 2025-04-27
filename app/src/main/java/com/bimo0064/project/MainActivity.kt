@@ -165,8 +165,9 @@ fun DrawerContent(onMenuClick: (String) -> Unit) {
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(bottom = 16.dp)
         )
+        DrawerItem("home", Icons.Default.Home) { onMenuClick("home") }
         DrawerItem("Informasi Kost", Icons.Default.Info) { onMenuClick("informasi") }
-        DrawerItem("Kelola Data P.Listrik", Icons.Default.Home) { onMenuClick("listrik") }
+        DrawerItem("Kelola Data P.Listrik", Icons.Default.Info) { onMenuClick("listrik") }
         DrawerItem("Cek saldo kas", Icons.Default.Money) { onMenuClick("cek_saldo") }
         DrawerItem("Logout", Icons.Default.ExitToApp) { onMenuClick("login") }
     }

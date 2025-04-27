@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.bimo0064.project.data.DataStoreManager
 import com.bimo0064.project.model.Pembayaran
 import kotlinx.coroutines.launch
@@ -28,7 +29,7 @@ fun CekSaldoScreen(dataStoreManager: DataStoreManager) {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFE0E0E0)
+        color = Color.White
     ) {
         Column(
             modifier = Modifier
@@ -39,22 +40,35 @@ fun CekSaldoScreen(dataStoreManager: DataStoreManager) {
         ) {
             Text(
                 text = "Uang Kas Wisma Kania",
-                style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black)
+                fontSize = 24.sp,
+                color = Color.Black,
+                style = MaterialTheme.typography.headlineMedium
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = "Rp. $saldo",
-                style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black),
-                modifier = Modifier.padding(vertical = 16.dp)
+                fontSize = 28.sp,
+                color = Color(0xFF2B9E9E),
+                style = MaterialTheme.typography.headlineLarge
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = "Saldo Baru: $inputSaldo",
-                style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black),
-                modifier = Modifier.padding(vertical = 16.dp)
+                fontSize = 20.sp,
+                color = Color.Black,
+                style = MaterialTheme.typography.bodyLarge
             )
 
-            Column {
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Keypad Input
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 for (row in 0..2) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -62,16 +76,8 @@ fun CekSaldoScreen(dataStoreManager: DataStoreManager) {
                     ) {
                         for (col in 0..2) {
                             val number = 9 - (row * 3 + col)
-                            Button(
-                                onClick = { inputSaldo += number.toString() },
-                                shape = RoundedCornerShape(100.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-                                modifier = Modifier.size(60.dp)
-                            ) {
-                                Text(
-                                    text = number.toString(),
-                                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black)
-                                )
+                            NumberButton(number.toString()) {
+                                inputSaldo += number.toString()
                             }
                         }
                     }
@@ -84,58 +90,43 @@ fun CekSaldoScreen(dataStoreManager: DataStoreManager) {
                     .padding(top = 16.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Button(
-                    onClick = { if (inputSaldo.isNotEmpty()) inputSaldo = inputSaldo.dropLast(1) },
-                    shape = RoundedCornerShape(100.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-                    modifier = Modifier.height(56.dp)
-                ) {
-                    Text("Hapus", style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black))
+                ActionButton(text = "Hapus") {
+                    if (inputSaldo.isNotEmpty()) inputSaldo = inputSaldo.dropLast(1)
                 }
-
-                Button(
-                    onClick = { inputSaldo += "0" },
-                    shape = RoundedCornerShape(100.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-                    modifier = Modifier.size(65.dp)
-                ) {
-                    Text("0", style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black))
+                NumberButton("0") {
+                    inputSaldo += "0"
                 }
-
-                Button(
-                    onClick = {
-                        val newSaldo = inputSaldo.toIntOrNull()
-                        if (newSaldo != null && newSaldo >= 0) {
-                            saldo = newSaldo
-                            inputSaldo = ""
-                            scope.launch {
-                                dataStoreManager.saveBalance(saldo)
-                            }
+                ActionButton(text = "OK") {
+                    val newSaldo = inputSaldo.toIntOrNull()
+                    if (newSaldo != null && newSaldo >= 0) {
+                        saldo = newSaldo
+                        inputSaldo = ""
+                        scope.launch {
+                            dataStoreManager.saveBalance(saldo)
                         }
-                    },
-                    shape = RoundedCornerShape(100.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-                    modifier = Modifier.height(56.dp)
-                ) {
-                    Text("OK", style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black))
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
                 text = "Riwayat Pembayaran",
-                style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black),
-                modifier = Modifier.padding(vertical = 16.dp)
+                fontSize = 22.sp,
+                color = Color.Black,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            LazyColumn {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxHeight()
+            ) {
                 items(payments) { pembayaran ->
                     Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
@@ -147,5 +138,37 @@ fun CekSaldoScreen(dataStoreManager: DataStoreManager) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun NumberButton(number: String, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier.size(65.dp),
+        shape = RoundedCornerShape(50),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2B9E9E))
+    ) {
+        Text(
+            text = number,
+            fontSize = 20.sp,
+            color = Color.White
+        )
+    }
+}
+
+@Composable
+fun ActionButton(text: String, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier.height(56.dp),
+        shape = RoundedCornerShape(50),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2B9E9E))
+    ) {
+        Text(
+            text = text,
+            fontSize = 18.sp,
+            color = Color.White
+        )
     }
 }

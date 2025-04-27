@@ -46,8 +46,9 @@ fun KelolaDataListrikScreen() {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            .background(Color(0xFFE6F0F2)) // Soft background color
     ) {
-        // History bagian atas
+        // Header with history of input data
         if (dayDataMap.isNotEmpty()) {
             Column(
                 modifier = Modifier
@@ -56,21 +57,35 @@ fun KelolaDataListrikScreen() {
             ) {
                 Text(
                     text = "Riwayat Input:",
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color(0xFF2B9E9E) // Matching theme color
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
                 dayDataMap.entries.sortedBy { it.key.toInt() }.forEach { (day, data) ->
-                    Text(
-                        text = "Tanggal $day - ${data.name} (${if (data.isPaid) "Sudah Bayar" else "Belum Bayar"})",
-                        fontSize = 14.sp
-                    )
+                    Card(
+                        modifier = Modifier.padding(vertical = 4.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        elevation = CardDefaults.elevatedCardElevation(4.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                        ) {
+                            Text(
+                                text = "Tanggal $day - ${data.name} (${if (data.isPaid) "Sudah Bayar" else "Belum Bayar"})",
+                                fontSize = 14.sp,
+                                color = Color.Gray
+                            )
+                        }
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        // Kalender
+        // Calendar view
         CalendarContent(
             month = month,
             year = year.toString(),
@@ -85,7 +100,7 @@ fun KelolaDataListrikScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Navigasi bulan
+        // Month Navigation
         MonthNavigation(
             month = month,
             year = year,
@@ -109,7 +124,7 @@ fun KelolaDataListrikScreen() {
                         val key = day.toString()
                         dayDataMap[key] = DayData(inputName, isPaid)
 
-                        // Simpan perubahan
+                        // Save changes
                         scope.launch {
                             dataStoreManager.saveDayData(month, year.toString(), dayDataMap)
                         }
@@ -183,7 +198,7 @@ private fun CalendarContent(
     onDayClicked: (Int) -> Unit
 ) {
     val daysInMonth = getDaysInMonth(month, year)
-    val columns = 5
+    val columns = 7 // GANTI dari 5 ke 7
     val rows = (daysInMonth + columns - 1) / columns
 
     Column {
@@ -199,13 +214,14 @@ private fun CalendarContent(
                         DayBox(
                             day = dayNumber,
                             data = dayDataMap[key],
-                            onClick = { onDayClicked(dayNumber) }
+                            onClick = { onDayClicked(dayNumber) },
+                            modifier = Modifier.weight(1f) // Tambah weight di sini
                         )
                     } else {
                         Spacer(
                             modifier = Modifier
-                                .weight(1f)
-                                .height(60.dp)
+                                .weight(1f) // Biar spasi kosong juga rata
+                                .height(48.dp) // Sesuaikan tinggi spasi kosong
                         )
                     }
                 }
@@ -215,22 +231,22 @@ private fun CalendarContent(
     }
 }
 
-
 @Composable
 private fun DayBox(
     day: Int,
     data: DayData?,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val bgColor = when {
-        data?.isPaid == true -> Color.Red
-        data != null -> Color.Cyan // Biru Muda kalau hanya isi nama
+        data?.isPaid == true -> Color(0xFF4CAF50)
+        data != null -> Color.Cyan
         else -> Color.White
     }
 
     Box(
-        modifier = Modifier
-            .size(60.dp)
+        modifier = modifier
+            .aspectRatio(1f)
             .padding(4.dp)
             .background(color = bgColor, shape = RoundedCornerShape(8.dp))
             .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
@@ -254,6 +270,7 @@ private fun DayBox(
         }
     }
 }
+
 
 @Composable
 private fun InputNameDialog(
