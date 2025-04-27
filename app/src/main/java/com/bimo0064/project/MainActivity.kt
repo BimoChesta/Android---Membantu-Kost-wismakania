@@ -26,12 +26,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.bimo0064.project.Screens.AwalScreen
 import com.bimo0064.project.Screens.CekSaldoScreen
 import com.bimo0064.project.Screens.HomeScreen
 import com.bimo0064.project.Screens.InformasiScreen
+import com.bimo0064.project.Screens.KeduaScreen
 import com.bimo0064.project.Screens.KelolaDataListrikScreen
+import com.bimo0064.project.Screens.LoginScreen
 import com.bimo0064.project.Screens.QrDetailScreen
-import com.bimo0064.project.Screens.TambahPenghuniScreen
+import com.bimo0064.project.Screens.RegisterScreen
 import com.bimo0064.project.data.DataStoreManager
 import kotlinx.coroutines.launch
 
@@ -101,10 +104,25 @@ fun AppEntryPoint() {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavGraph(navController: NavHostController, dataStoreManager: DataStoreManager) {
-    NavHost(navController = navController, startDestination = "home") {
+    NavHost(navController = navController, startDestination = "awalan") {
+        composable("awalan") { AwalScreen(navController) }
+        composable("kedua") { KeduaScreen(navController) }
+        composable("login") {
+            LoginScreen(
+                onLoginSuccess = { navController.navigate("home") },
+                navController = navController,
+                dataStoreManager = dataStoreManager
+            )
+        }
+        composable("register") {
+            RegisterScreen(
+                onRegisterSuccess = { navController.navigate("login") },
+                dataStoreManager = dataStoreManager,
+                navController = navController
+            )
+        }
         composable("home") { HomeScreen(navController, dataStoreManager) }
         composable("informasi") { InformasiScreen() }
-        composable("tambah") { TambahPenghuniScreen() }
         composable("cek_saldo") { CekSaldoScreen(dataStoreManager) }
         composable("listrik") { KelolaDataListrikScreen() }
         composable("qr_detail") { QrDetailScreen(navController, dataStoreManager) }
@@ -147,12 +165,10 @@ fun DrawerContent(onMenuClick: (String) -> Unit) {
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(bottom = 16.dp)
         )
-
         DrawerItem("Informasi Kost", Icons.Default.Info) { onMenuClick("informasi") }
-        DrawerItem("Tambah Penghuni", Icons.Default.Person) { onMenuClick("tambah") }
         DrawerItem("Kelola Data P.Listrik", Icons.Default.Home) { onMenuClick("listrik") }
         DrawerItem("Cek saldo kas", Icons.Default.Money) { onMenuClick("cek_saldo") }
-        DrawerItem("Logout", Icons.Default.ExitToApp) { onMenuClick("home") }
+        DrawerItem("Logout", Icons.Default.ExitToApp) { onMenuClick("login") }
     }
 }
 

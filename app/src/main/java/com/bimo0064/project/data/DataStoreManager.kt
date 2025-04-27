@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.bimo0064.project.model.DayData
 import com.bimo0064.project.model.Pembayaran
+import com.bimo0064.project.model.User
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.first
@@ -62,6 +63,20 @@ class DataStoreManager(private val context: Context) {
         val preferences = context.dataStore.data.first()
         val paymentsJson = preferences[paymentsKey] ?: return emptyList()
         return Gson().fromJson(paymentsJson, Array<Pembayaran>::class.java).toList()
+    }
+
+    private val userKey = stringPreferencesKey("user")
+
+    suspend fun saveUser(user: User) {
+        context.dataStore.edit { preferences ->
+            preferences[userKey] = Gson().toJson(user)
+        }
+    }
+
+    suspend fun loadUser(): User? {
+        val preferences = context.dataStore.data.first()
+        val userJson = preferences[userKey] ?: return null
+        return Gson().fromJson(userJson, User::class.java)
     }
 
     private fun generateKey(month: String, year: String): String {
