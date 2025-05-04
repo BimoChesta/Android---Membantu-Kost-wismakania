@@ -131,9 +131,8 @@ fun HomeScreen(
             ) {
                 item { MenuIcon(R.drawable.petir, "Listrik", navController, "listrik") }
                 item { MenuIcon(R.drawable.aturan, "Aturan", navController, "aturan") }
-                item { MenuIcon(R.drawable.datakas, "Data kas", navController, "cek_saldo") }
+                item { MenuIcon(R.drawable.datakas, "Data kas", navController, "kas") }
                 item { MenuIcon(R.drawable.perpanjangkost, "Perpanjang kost", navController, "perpanjangkost") }
-                item { MenuIcon(R.drawable.kas, "Kas", navController, "kas") }
                 item { MenuIcon(R.drawable.home, "Informasi kost", navController, "informasi") }
             }
 

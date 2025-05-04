@@ -105,7 +105,7 @@ fun HomeScreenAdmin(
                 modifier = Modifier.height(200.dp)
             ) {
                 item { MenuIconAdmin(R.drawable.petir, "Riwayat Listrik", navController, "listrik") }
-                item { MenuIconAdmin(R.drawable.datakas, "Data kas", navController, "cek_saldo") }
+                item { MenuIcon(R.drawable.kas, "Ubah Kas", navController, "Cek_saldo") }
                 item { MenuIconAdmin(R.drawable.perpanjangkost, "Riwayat Perpanjang kost", navController, "dataPerpanjangkost") }
                 item { MenuIconAdmin(R.drawable.kas, "Kas", navController, "kas") }
             }

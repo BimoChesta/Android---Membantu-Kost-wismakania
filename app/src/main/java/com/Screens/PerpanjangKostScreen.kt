@@ -1,5 +1,6 @@
 package com.bimo0064.project.Screens
 
+import android.content.Context
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -166,10 +167,8 @@ fun PerpanjangKostScreen(navController: NavHostController) {
                     imageUri?.toString()
                 )
 
-                // Simpan ke currentBackStackEntry (lebih aman)
-                navController.currentBackStackEntry
-                    ?.savedStateHandle
-                    ?.set("submittedData", data)
+                // Simpan ke SharedPreferences
+                saveData(context, data)
 
                 Toast.makeText(context, "Data telah tercatat!", Toast.LENGTH_SHORT).show()
                 navController.navigate("dataPerpanjangKost")
@@ -184,4 +183,14 @@ fun PerpanjangKostScreen(navController: NavHostController) {
             Text("Submit")
         }
     }
+}
+
+private fun saveData(context: Context, data: DataPerpanjangKost) {
+    val sharedPreferences = context.getSharedPreferences("KostData", Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+    editor.putString("nama", data.nama)
+    editor.putString("kamar", data.kamar)
+    editor.putString("bulan", data.bulan)
+    editor.putString("imageUri", data.imageUri)
+    editor.apply()
 }
