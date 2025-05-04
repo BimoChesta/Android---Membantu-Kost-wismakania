@@ -4,6 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -13,9 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavHostController
 import com.bimo0064.project.R
 import com.bimo0064.project.data.DataStoreManager
@@ -25,7 +27,7 @@ fun HomeScreen(
     navController: NavHostController,
     dataStoreManager: DataStoreManager
 ) {
-    var saldo by remember { mutableStateOf(0) }
+    var saldo by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
         saldo = dataStoreManager.loadBalance()
@@ -40,98 +42,146 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.Start,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "Dashboard",
+                    text = "Selamat Datang,",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.Gray
+                )
+                Text(
+                    text = "Bimo Chesta",
                     style = MaterialTheme.typography.headlineMedium.copy(
-                        fontSize = 26.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF2B9E9E)
+                        fontWeight = FontWeight.Bold
                     )
                 )
+            }
 
-                Card(
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF2B9E9E)
-                    ),
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .shadow(4.dp, RoundedCornerShape(16.dp)),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White,
+                )
+            ) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                        .height(150.dp)
-                        .shadow(8.dp, RoundedCornerShape(20.dp))
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.dompet),
+                        contentDescription = "Saldo Icon",
+                        modifier = Modifier.size(48.dp)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column {
                         Text(
-                            text = "Saldo Uang Kas",
-                            fontSize = 20.sp,
-                            color = Color.White
+                            text = "Uang kas",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "Rp. $saldo",
-                            fontSize = 32.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
                 }
             }
 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxWidth()
+            // Menu Grid
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3), // Ubah menjadi 3 kolom
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.height(250.dp) // Sesuaikan tinggi sesuai kebutuhan
             ) {
-                HomeButtonWithIcon(
-                    text = "Cek Saldo",
-                    icon = R.drawable.dompet,
-                    onClick = { navController.navigate("cek_saldo") }
-                )
-                HomeButtonWithIcon(
-                    text = "Informasi Kost",
-                    icon = R.drawable.home,
-                    onClick = { navController.navigate("informasi") }
-                )
-                HomeButtonWithIcon(
-                    text = "Cek Pembayaran Listrik",
-                    icon = R.drawable.petir,
-                    onClick = { navController.navigate("listrik") }
-                )
+                item { MenuIcon(R.drawable.petir, "Listrik", navController, "listrik") }
+                item { MenuIcon(R.drawable.aturan, "Aturan", navController, "aturan") }
+                item { MenuIcon(R.drawable.datakas, "Data kas", navController, "data_kas") }
+                item { MenuIcon(R.drawable.perpanjangkost, "Perpanjang kost", navController, "perpanjang_kost") }
+                item { MenuIcon(R.drawable.kas, "Kas", navController, "cek_saldo") }
+                item { MenuIcon(R.drawable.home, "Informasi kost", navController, "informasi") }
             }
 
-            Box(
-                contentAlignment = Alignment.Center,
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Box(
                     modifier = Modifier
-                        .size(100.dp)
+                        .size(120.dp)
+                        .background(Color.Transparent),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.clipboard),
+                        contentDescription = "No History",
+                        modifier = Modifier.size(90.dp)
+                    )
+                }
+                Text(
+                    text = "Anda tidak ada riwayat",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+            }
+
+
+            Box(
+                contentAlignment = Alignment.BottomEnd,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(70.dp)
                         .background(Color.White, shape = CircleShape)
-                        .shadow(8.dp, shape = CircleShape)
+                        .shadow(4.dp, shape = CircleShape)
                         .clickable { navController.navigate("qr_detail") },
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.scan),
                         contentDescription = "QR Code",
-                        modifier = Modifier.size(60.dp)
+                        modifier = Modifier.size(30.dp)
                     )
                 }
             }
         }
     }
 }
+
+@Composable
+fun MenuIcon(icon: Int, text: String, navController: NavHostController, route: String) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally, // Pusatkan secara horizontal
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .clickable { navController.navigate(route) }
+            .padding(8.dp) // Tambahkan padding agar lebih nyaman
+    ) {
+        Icon(
+            painter = painterResource(id = icon),
+            contentDescription = text,
+            modifier = Modifier.size(32.dp),
+            tint = Color.Unspecified
+        )
+        Spacer(modifier = Modifier.height(4.dp)) // Jarak antara ikon dan teks
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodySmall
+        )
+    }
+}
+
 
 @Composable
 fun HomeButtonWithIcon(text: String, icon: Int, onClick: () -> Unit) {

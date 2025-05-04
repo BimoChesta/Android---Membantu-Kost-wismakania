@@ -50,7 +50,7 @@ fun QrDetailScreen(navController: NavHostController, dataStoreManager: DataStore
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(350.dp)
                     .clip(RoundedCornerShape(16.dp))
                     .background(Color.White)
             )
