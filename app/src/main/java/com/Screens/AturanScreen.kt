@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.bimo0064.project.R
 
 @Composable
-fun InformasiScreen() {
+fun AturanScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -28,6 +28,7 @@ fun InformasiScreen() {
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
+        // Gambar Logo
         Image(
             painter = painterResource(id = R.drawable.logobiasa),
             contentDescription = "Logo Kost",
@@ -41,55 +42,30 @@ fun InformasiScreen() {
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Baris 2 Kolom
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Kolom 1
             Column(modifier = Modifier.weight(1f)) {
-                InfoCard(
-                    title = "Alamat Kost",
+                InfoCardAturan(
+                    title = "Peraturan Kost",
                     content = """
-                        Wisma Kania, Gang Amdasari, RT.5/RW.1,
-                        Kampung Managa Dua, Dayeuhkolot (Belakang Mixue Sukapura)
-                        DAYEUHKOLOT, KAB.BANDUNG, JAWA BARAT, ID 40257
+                        1. Setiap keluar masuk harap kunci kembali pagar dengan gembok.
+                        2. Tidak membawa pasangan tanpa izin.
+                        3. Bersihkan dapur setelah pakai.
+                        4. Buang sampah pada tempatnya.
                     """.trimIndent()
                 )
-
                 Spacer(modifier = Modifier.height(16.dp))
             }
-
-            Column(modifier = Modifier.weight(1f)) {
-                InfoCard(
-                    title = "Fasilitas & Kewajiban",
-                    content = """
-                        Fasilitas Kamar:
-                        - Kasur
-                        - Headboard kasur
-                        - Bantal & Guling
-                        - Meja
-                        - Lemari
-                        - Kamar mandi dalam
-                        - Ember & Gayung
-
-                        Fasilitas Umum:
-                        - Dapur
-                        - Alat masak
-                        - Kulkas
-                        - Rooftop
-                        - Jemuran pakaian
-                        - Ruang santai
-
-                        Kewajiban:
-                        - Membayar listrik setiap bulan
-                    """.trimIndent()
-                )
             }
         }
     }
-}
 
 @Composable
-fun InfoCard(title: String, content: String) {
+fun InfoCardAturan(title: String, content: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()

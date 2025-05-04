@@ -21,41 +21,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.bimo0064.project.R
 import com.bimo0064.project.data.DataStoreManager
-import com.bimo0064.project.model.User
-import kotlinx.coroutines.launch
 
 @Composable
-fun HomeScreen(
+fun HomeScreenAdmin(
     navController: NavHostController,
     dataStoreManager: DataStoreManager
 ) {
     var saldo by remember { mutableIntStateOf(0) }
 
-    // State to hold the User object (can be null)
-    var user by remember { mutableStateOf<User?>(null) }
-
-    // Load the user from DataStore only once
     LaunchedEffect(Unit) {
         saldo = dataStoreManager.loadBalance()
-        user = dataStoreManager.loadUser()
-    }
-
-    // Determine if the user is admin based on the loaded user
-    val isAdmin = remember {
-        derivedStateOf {
-            user?.username == "admin" && user?.password == "1234"
-        }
-    }
-
-    // Determine the user name based on the loaded user
-    val userName = remember {
-        derivedStateOf {
-            if (isAdmin.value) {
-                "Admin"
-            } else {
-                user?.name ?: "Pengguna"
-            }
-        }
     }
 
     Surface(
@@ -80,7 +55,7 @@ fun HomeScreen(
                     color = Color.Gray
                 )
                 Text(
-                    text = userName.value,
+                    text = "Admin", // Hardcoded "Admin"
                     style = MaterialTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.Bold
                     )
@@ -129,12 +104,10 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.height(200.dp)
             ) {
-                item { MenuIcon(R.drawable.petir, "Listrik", navController, "listrik") }
-                item { MenuIcon(R.drawable.aturan, "Aturan", navController, "aturan") }
-                item { MenuIcon(R.drawable.datakas, "Data kas", navController, "cek_saldo") }
-                item { MenuIcon(R.drawable.perpanjangkost, "Perpanjang kost", navController, "perpanjangkost") }
-                item { MenuIcon(R.drawable.kas, "Kas", navController, "kas") }
-                item { MenuIcon(R.drawable.home, "Informasi kost", navController, "informasi") }
+                item { MenuIconAdmin(R.drawable.petir, "Riwayat Listrik", navController, "listrik") }
+                item { MenuIconAdmin(R.drawable.datakas, "Data kas", navController, "cek_saldo") }
+                item { MenuIconAdmin(R.drawable.perpanjangkost, "Riwayat Perpanjang kost", navController, "dataPerpanjangkost") }
+                item { MenuIconAdmin(R.drawable.kas, "Kas", navController, "kas") }
             }
 
             Column(
@@ -185,7 +158,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun MenuIcon(icon: Int, text: String, navController: NavHostController, route: String) {
+fun MenuIconAdmin(icon: Int, text: String, navController: NavHostController, route: String) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -201,5 +174,37 @@ fun MenuIcon(icon: Int, text: String, navController: NavHostController, route: S
             text = text,
             style = MaterialTheme.typography.bodySmall
         )
+    }
+}
+
+@Composable
+fun HomeButtonWithIcon(text: String, icon: Int, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth(0.85f)
+            .height(56.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFF2B9E9E),
+            contentColor = Color.White
+        )
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = icon),
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
+            Text(
+                text = text,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
     }
 }

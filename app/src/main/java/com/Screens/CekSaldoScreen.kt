@@ -1,8 +1,6 @@
 package com.bimo0064.project.Screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -12,19 +10,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bimo0064.project.data.DataStoreManager
-import com.bimo0064.project.model.Pembayaran
 import kotlinx.coroutines.launch
 
 @Composable
 fun CekSaldoScreen(dataStoreManager: DataStoreManager) {
     var saldo by remember { mutableIntStateOf(0) }
     var inputSaldo by remember { mutableStateOf("") }
-    var payments by remember { mutableStateOf(listOf<Pembayaran>()) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         saldo = dataStoreManager.loadBalance()
-        payments = dataStoreManager.loadPayments()
     }
 
     Surface(
@@ -103,36 +98,6 @@ fun CekSaldoScreen(dataStoreManager: DataStoreManager) {
                         inputSaldo = ""
                         scope.launch {
                             dataStoreManager.saveBalance(saldo)
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = "Riwayat Pembayaran",
-                fontSize = 22.sp,
-                color = Color.Black,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxHeight()
-            ) {
-                items(payments) { pembayaran ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(text = "Nama: ${pembayaran.nama}")
-                            Text(text = "Kamar: ${pembayaran.kamar}")
-                            Text(text = "Status: ${pembayaran.bukti}")
                         }
                     }
                 }
