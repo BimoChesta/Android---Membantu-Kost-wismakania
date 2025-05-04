@@ -48,43 +48,6 @@ fun KelolaDataListrikScreen() {
             .padding(16.dp)
             .background(Color(0xFFE6F0F2)) // Soft background color
     ) {
-        // Header with history of input data
-        if (dayDataMap.isNotEmpty()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            ) {
-                Text(
-                    text = "Riwayat Input:",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color(0xFF2B9E9E) // Matching theme color
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                dayDataMap.entries.sortedBy { it.key.toInt() }.forEach { (day, data) ->
-                    Card(
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        elevation = CardDefaults.elevatedCardElevation(4.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                        ) {
-                            Text(
-                                text = "Tanggal $day - ${data.name} (${if (data.isPaid) "Sudah Bayar" else "Belum Bayar"})",
-                                fontSize = 14.sp,
-                                color = Color.Gray
-                            )
-                        }
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
         // Calendar view
         CalendarContent(
             month = month,
@@ -150,45 +113,57 @@ fun MonthNavigation(
 
     val currentIndex = months.indexOf(month)
 
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+            .height(56.dp) // Tetapkan tinggi tetap agar tata letaknya stabil
+            .padding(horizontal = 16.dp) // Ruang samping agar tidak terlalu mepet
     ) {
-        IconButton(onClick = {
-            val newIndex = (currentIndex - 1 + 12) % 12
-            val newMonth = months[newIndex]
-            val newYear = if (newIndex == 11) year - 1 else year
-            onMonthYearChange(newMonth, newYear)
-        }) {
+        // Tombol kiri (sebelumnya)
+        IconButton(
+            onClick = {
+                val newIndex = (currentIndex - 1 + 12) % 12
+                val newMonth = months[newIndex]
+                val newYear = if (newIndex == 11) year - 1 else year
+                onMonthYearChange(newMonth, newYear)
+            },
+            modifier = Modifier.align(Alignment.CenterStart)
+        ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Previous Month"
+                contentDescription = "Previous Month",
+                tint = Color.Black
             )
         }
 
+        // Teks bulan dan tahun di tengah
         Text(
             text = "$month $year",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.titleMedium.copy(fontSize = 20.sp),
+            modifier = Modifier.align(Alignment.Center),
             textAlign = TextAlign.Center
         )
 
-        IconButton(onClick = {
-            val newIndex = (currentIndex + 1) % 12
-            val newMonth = months[newIndex]
-            val newYear = if (newIndex == 0) year + 1 else year
-            onMonthYearChange(newMonth, newYear)
-        }) {
+        // Tombol kanan (berikutnya)
+        IconButton(
+            onClick = {
+                val newIndex = (currentIndex + 1) % 12
+                val newMonth = months[newIndex]
+                val newYear = if (newIndex == 0) year + 1 else year
+                onMonthYearChange(newMonth, newYear)
+            },
+            modifier = Modifier.align(Alignment.CenterEnd)
+        ) {
             Icon(
                 imageVector = Icons.Default.ArrowForward,
-                contentDescription = "Next Month"
+                contentDescription = "Next Month",
+                tint = Color.Black
             )
         }
     }
 }
+
+
 
 @Composable
 private fun CalendarContent(
@@ -198,7 +173,7 @@ private fun CalendarContent(
     onDayClicked: (Int) -> Unit
 ) {
     val daysInMonth = getDaysInMonth(month, year)
-    val columns = 7 // GANTI dari 5 ke 7
+    val columns = 5 // GANTI dari 5 ke 7
     val rows = (daysInMonth + columns - 1) / columns
 
     Column {

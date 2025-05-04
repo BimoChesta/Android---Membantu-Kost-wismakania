@@ -104,7 +104,7 @@ fun HomeScreenAdmin(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.height(200.dp)
             ) {
-                item { MenuIconAdmin(R.drawable.petir, "Riwayat Listrik", navController, "listrik") }
+                item { MenuIconAdmin(R.drawable.petir, "Riwayat Listrik", navController, "riwayatlistrik") }
                 item { MenuIcon(R.drawable.kas, "Ubah Kas", navController, "Cek_saldo") }
                 item { MenuIconAdmin(R.drawable.perpanjangkost, "Riwayat Perpanjang kost", navController, "dataPerpanjangkost") }
                 item { MenuIconAdmin(R.drawable.kas, "Kas", navController, "kas") }
@@ -140,7 +140,7 @@ fun HomeScreenAdmin(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(70.dp)
+                        .size(80.dp)
                         .background(Color.White, shape = CircleShape)
                         .shadow(4.dp, shape = CircleShape)
                         .clickable { navController.navigate("qr_detail") },
@@ -177,34 +177,34 @@ fun MenuIconAdmin(icon: Int, text: String, navController: NavHostController, rou
     }
 }
 
-@Composable
-fun HomeButtonWithIcon(text: String, icon: Int, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth(0.85f)
-            .height(56.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF2B9E9E),
-            contentColor = Color.White
-        )
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = icon),
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(24.dp)
-            )
-            Text(
-                text = text,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium
-            )
-        }
-    }
-}
+//@Composable
+//fun HomeButtonWithIcon(text: String, icon: Int, onClick: () -> Unit) {
+//    Button(
+//        onClick = onClick,
+//        modifier = Modifier
+//            .fillMaxWidth(0.85f)
+//            .height(56.dp),
+//        shape = RoundedCornerShape(16.dp),
+//        colors = ButtonDefaults.buttonColors(
+//            containerColor = Color(0xFF2B9E9E),
+//            contentColor = Color.White
+//        )
+//    ) {
+//        Row(
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.spacedBy(8.dp)
+//        ) {
+//            Icon(
+//                painter = painterResource(id = icon),
+//                contentDescription = null,
+//                tint = Color.White,
+//                modifier = Modifier.size(24.dp)
+//            )
+//            Text(
+//                text = text,
+//                fontSize = 18.sp,
+//                fontWeight = FontWeight.Medium
+//            )
+//        }
+//    }
+//}

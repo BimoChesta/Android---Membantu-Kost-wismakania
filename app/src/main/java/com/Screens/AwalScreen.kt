@@ -11,12 +11,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.compose.ui.draw.shadow
 
 @Composable
 fun AwalScreen(navController: NavHostController) {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color.White
+        color = Color(0xFFF5F5F5) // Latar belakang abu-abu muda
     ) {
         Column(
             modifier = Modifier
@@ -28,7 +29,7 @@ fun AwalScreen(navController: NavHostController) {
             Text(
                 text = "Selamat Datang\nWisma Kania",
                 style = MaterialTheme.typography.headlineMedium.copy(
-                    fontSize = 28.sp,
+                    fontSize = 32.sp, // Sedikit lebih besar
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF2B9E9E)
                 ),
@@ -45,8 +46,8 @@ fun AwalScreen(navController: NavHostController) {
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+                    .height(56.dp)
+                    .shadow(elevation = 4.dp, shape = RoundedCornerShape(16.dp)), // Tambah shadow
             ) {
                 Text(text = "Lanjut", fontSize = 18.sp, fontWeight = FontWeight.Medium)
             }
