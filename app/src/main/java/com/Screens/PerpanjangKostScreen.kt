@@ -61,7 +61,7 @@ fun PerpanjangKostScreen(navController: NavHostController) {
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF388E3C), // Hijau
+                    containerColor = Color(0xFF2B9E9E), // Hijau
                     titleContentColor = Color.White,
                     navigationIconContentColor = Color.White
                 )
@@ -157,7 +157,7 @@ fun PerpanjangKostScreen(navController: NavHostController) {
                     Button(
                         onClick = { imagePickerLauncher.launch("image/*") },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF03A9F4)) // Biru muda
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2B9E9E)) // Biru muda
                     ) {
                         Text("Pilih Gambar Bukti", color = Color.White)
                     }

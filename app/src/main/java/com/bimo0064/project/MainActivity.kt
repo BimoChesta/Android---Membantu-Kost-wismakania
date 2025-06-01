@@ -132,7 +132,7 @@ fun AppNavGraph(navController: NavHostController, dataStoreManager: DataStoreMan
         }
 
         composable("informasi") {
-            InformasiScreen()
+            InformasiScreen(navController)
         }
 
         composable("cek_saldo") {
