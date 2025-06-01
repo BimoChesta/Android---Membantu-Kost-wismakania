@@ -7,13 +7,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bimo0064.project.R
 import com.bimo0064.project.data.DataStoreManager
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CekSaldoScreen(dataStoreManager: DataStoreManager) {
+fun CekSaldoScreen(
+    dataStoreManager: DataStoreManager,
+    onBackClick: () -> Unit
+) {
     var saldo by remember { mutableIntStateOf(0) }
     var inputSaldo by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
@@ -22,13 +28,36 @@ fun CekSaldoScreen(dataStoreManager: DataStoreManager) {
         saldo = dataStoreManager.loadBalance()
     }
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = Color.White
-    ) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Cek Saldo",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.White
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_arrow_back_24),
+                            contentDescription = "Kembali",
+                            tint = Color.White
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF2B9E9E)
+                )
+            )
+        },
+        containerColor = Color.White
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(padding)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
@@ -105,6 +134,7 @@ fun CekSaldoScreen(dataStoreManager: DataStoreManager) {
         }
     }
 }
+
 
 @Composable
 fun NumberButton(number: String, onClick: () -> Unit) {

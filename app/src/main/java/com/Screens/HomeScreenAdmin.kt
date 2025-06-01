@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -27,7 +28,7 @@ fun HomeScreenAdmin(
     navController: NavHostController,
     dataStoreManager: DataStoreManager
 ) {
-    var saldo by remember { mutableIntStateOf(0) }
+    var saldo by remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit) {
         saldo = dataStoreManager.loadBalance()
@@ -41,57 +42,49 @@ fun HomeScreenAdmin(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // Bagian Atas: Selamat Datang dan Saldo
-            Column(
-                horizontalAlignment = Alignment.Start,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            // Greeting
+            Column {
                 Text(
                     text = "Selamat Datang,",
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.Gray
                 )
                 Text(
-                    text = "Admin", // Hardcoded "Admin"
+                    text = "Admin",
                     style = MaterialTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.Bold
                     )
                 )
             }
 
+            // Balance Card
             Card(
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .shadow(4.dp, RoundedCornerShape(16.dp)),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White,
-                )
+                shape = RoundedCornerShape(20.dp),
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(20.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.dompet),
-                        contentDescription = "Saldo Icon",
+                        contentDescription = "Dompet",
                         modifier = Modifier.size(48.dp)
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
                         Text(
-                            text = "Uang kas",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            text = "Uang Kas",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                         )
                         Text(
                             text = "Rp. $saldo",
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.titleMedium.copy(color = Color(0xFF2E7D32))
                         )
                     }
                 }
@@ -100,62 +93,41 @@ fun HomeScreenAdmin(
             // Menu Grid
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.height(200.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxHeight(0.6f)
             ) {
-                item { MenuIconAdmin(R.drawable.petir, "Riwayat Listrik", navController, "riwayatlistrik") }
+                item { MenuIcon(R.drawable.petir, "Riwayat Listrik", navController, "riwayatlistrik") }
                 item { MenuIcon(R.drawable.kas, "Ubah Kas", navController, "Cek_saldo") }
-                item { MenuIconAdmin(R.drawable.perpanjangkost, "Riwayat Perpanjang kost", navController, "dataPerpanjangkost") }
-                item { MenuIconAdmin(R.drawable.kas, "Kas", navController, "kas") }
+                item { MenuIcon(R.drawable.perpanjangkost, "Riwayat Perpanjang", navController, "dataPerpanjangkost") }
+                item { MenuIcon(R.drawable.kas, "Kas", navController, "kas") }
             }
 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(120.dp)
-                        .background(Color.Transparent),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.clipboard),
-                        contentDescription = "No History",
-                        modifier = Modifier.size(90.dp)
-                    )
-                }
-                Text(
-                    text = "Anda tidak ada riwayat",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
-                )
-            }
-
-
+            // QR Button
             Box(
-                contentAlignment = Alignment.BottomEnd,
-                modifier = Modifier.fillMaxWidth()
+                contentAlignment = Alignment.CenterEnd,
+                modifier = Modifier.fillMaxSize()
             ) {
                 Box(
                     modifier = Modifier
                         .size(80.dp)
-                        .background(Color.White, shape = CircleShape)
-                        .shadow(4.dp, shape = CircleShape)
+                        .clip(CircleShape)
+                        .background(Color.White)
+                        .shadow(6.dp, shape = CircleShape)
                         .clickable { navController.navigate("qr_detail") },
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.scan),
                         contentDescription = "QR Code",
-                        modifier = Modifier.size(30.dp)
+                        modifier = Modifier.size(50.dp)
                     )
                 }
             }
         }
     }
 }
+
 
 @Composable
 fun MenuIconAdmin(icon: Int, text: String, navController: NavHostController, route: String) {

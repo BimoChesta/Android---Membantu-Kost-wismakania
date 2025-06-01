@@ -83,7 +83,7 @@ fun AppEntryPoint() {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavGraph(navController: NavHostController, dataStoreManager: DataStoreManager) {
-    NavHost(navController = navController, startDestination = "home") {
+    NavHost(navController = navController, startDestination = "homeAdmin") {
 
         composable("awalan") {
             AwalScreen(navController)
@@ -136,11 +136,14 @@ fun AppNavGraph(navController: NavHostController, dataStoreManager: DataStoreMan
         }
 
         composable("cek_saldo") {
-            CekSaldoScreen(dataStoreManager)
+            CekSaldoScreen(
+                dataStoreManager = dataStoreManager,
+                onBackClick = { navController.popBackStack() }
+            )
         }
 
         composable("kas") {
-            KasScreen(dataStoreManager)
+            KasScreen(dataStoreManager, navController)
         }
 
         composable("listrik") {
@@ -148,11 +151,11 @@ fun AppNavGraph(navController: NavHostController, dataStoreManager: DataStoreMan
         }
 
         composable("aturan") {
-            AturanScreen()
+            AturanScreen(navController)
         }
 
         composable("riwayatlistrik") {
-            RiwayatListrik()
+            RiwayatListrik(onBackClick = { navController.popBackStack() })
         }
 
         composable("qr_detail") {
@@ -164,7 +167,9 @@ fun AppNavGraph(navController: NavHostController, dataStoreManager: DataStoreMan
         }
 
         composable("dataPerpanjangKost") {
-            DataPerpanjangKostScreen(navController)
+            DataPerpanjangKostScreen(
+                navController
+            )
         }
     }
 }

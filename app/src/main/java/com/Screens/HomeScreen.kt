@@ -117,7 +117,7 @@ fun HomeScreen(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(70.dp)
+                        .size(80.dp)
                         .clip(CircleShape)
                         .background(Color.White)
                         .shadow(6.dp, shape = CircleShape)
@@ -127,7 +127,7 @@ fun HomeScreen(
                     Image(
                         painter = painterResource(id = R.drawable.scan),
                         contentDescription = "QR Code",
-                        modifier = Modifier.size(30.dp)
+                        modifier = Modifier.size(50.dp)
                     )
                 }
             }

@@ -18,8 +18,9 @@ import com.bimo0064.project.R
 import com.bimo0064.project.data.DataStoreManager
 import com.bimo0064.project.model.DayData
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RiwayatListrik() {
+fun RiwayatListrik(onBackClick: () -> Unit) {
     val context = LocalContext.current
     val dataStoreManager = remember { DataStoreManager(context) }
 
@@ -32,67 +33,95 @@ fun RiwayatListrik() {
         dayDataMap.putAll(dataStoreManager.loadDayData(month, year.toString()))
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF2FAFB))
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Riwayat Penggunaan Listrik",
-            style = MaterialTheme.typography.titleLarge.copy(color = Color(0xFF197278)),
-            modifier = Modifier.padding(bottom = 12.dp)
-        )
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Riwayat Listrik",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.White
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_arrow_back_24),
+                            contentDescription = "Kembali",
+                            tint = Color.White
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF197278)
+                )
+            )
+        },
+        containerColor = Color(0xFFF2FAFB)
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Riwayat Penggunaan Listrik",
+                style = MaterialTheme.typography.titleLarge.copy(color = Color(0xFF197278)),
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
 
-        if (dayDataMap.isNotEmpty()) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                dayDataMap.entries.sortedBy { it.key.toInt() }.forEach { (day, data) ->
-                    Card(
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        elevation = CardDefaults.cardElevation(4.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
-                            Text(
-                                text = "Tanggal $day",
-                                style = MaterialTheme.typography.titleSmall
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "${data.name} - ${if (data.isPaid) "✅ Sudah Bayar" else "❌ Belum Bayar"}",
-                                fontSize = 14.sp,
-                                color = if (data.isPaid) Color(0xFF2E7D32) else Color(0xFFD32F2F)
-                            )
+            if (dayDataMap.isNotEmpty()) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    dayDataMap.entries.sortedBy { it.key.toInt() }.forEach { (day, data) ->
+                        Card(
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(4.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text(
+                                    text = "Tanggal $day",
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "${data.name} - ${if (data.isPaid) "✅ Sudah Bayar" else "❌ Belum Bayar"}",
+                                    fontSize = 14.sp,
+                                    color = if (data.isPaid) Color(0xFF2E7D32) else Color(0xFFD32F2F)
+                                )
+                            }
                         }
                     }
                 }
+                Spacer(modifier = Modifier.height(24.dp))
+            } else {
+                Text(
+                    text = "Belum ada data untuk bulan ini.",
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(32.dp),
+                    textAlign = TextAlign.Center
+                )
             }
-            Spacer(modifier = Modifier.height(24.dp))
-        } else {
-            Text(
-                text = "Belum ada data untuk bulan ini.",
-                color = Color.Gray,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(32.dp),
-                textAlign = TextAlign.Center
+
+            ListrikMonthNavigation(
+                month = month,
+                year = year,
+                onMonthYearChange = { newMonth, newYear ->
+                    month = newMonth
+                    year = newYear
+                }
             )
         }
-
-        ListrikMonthNavigation(
-            month = month,
-            year = year,
-            onMonthYearChange = { newMonth, newYear ->
-                month = newMonth
-                year = newYear
-            }
-        )
     }
 }
+
 
 
 @Composable

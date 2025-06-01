@@ -13,8 +13,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -48,14 +48,13 @@ fun KelolaDataListrikScreen(onBackPressed: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(colors = listOf(Color(0xFFE0F7FA), Color(0xFFE1E1E1))))
+            .background(Brush.verticalGradient(listOf(Color(0xFFE0F7FA), Color(0xFFE1E1E1))))
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            // Title and Back Button
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(bottom = 16.dp)
@@ -69,13 +68,15 @@ fun KelolaDataListrikScreen(onBackPressed: () -> Unit) {
                 }
                 Text(
                     text = "Kelola Data Listrik",
-                    style = MaterialTheme.typography.titleLarge.copy(color = Color.Black, fontSize = 24.sp),
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        color = Color.Black,
+                        fontSize = 24.sp
+                    ),
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center
                 )
             }
 
-            // Calendar view
             CalendarContent(
                 month = month,
                 year = year.toString(),
@@ -90,7 +91,6 @@ fun KelolaDataListrikScreen(onBackPressed: () -> Unit) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Month Navigation
             MonthNavigation(
                 month = month,
                 year = year,
@@ -118,15 +118,11 @@ fun KelolaDataListrikScreen(onBackPressed: () -> Unit) {
                 onNameChanged = { inputName = it },
                 onPaidToggle = { isPaid = !isPaid },
                 onConfirm = {
-                    selectedDay?.let { day ->
-                        if (inputName.isNotBlank()) {
-                            val key = day.toString()
-                            dayDataMap[key] = DayData(inputName, isPaid)
-
-                            // Save changes
-                            scope.launch {
-                                dataStoreManager.saveDayData(month, year.toString(), dayDataMap)
-                            }
+                    if (inputName.isNotBlank()) {
+                        val key = selectedDay.toString()
+                        dayDataMap[key] = DayData(inputName, isPaid)
+                        scope.launch {
+                            dataStoreManager.saveDayData(month, year.toString(), dayDataMap)
                         }
                     }
                     showDialog = false
@@ -147,16 +143,13 @@ fun MonthNavigation(
         "Januari", "Februari", "Maret", "April", "Mei", "Juni",
         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     )
-
     val currentIndex = months.indexOf(month)
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .padding(horizontal = 16.dp)
     ) {
-        // Previous Month Button
         IconButton(
             onClick = {
                 val newIndex = (currentIndex - 1 + 12) % 12
@@ -169,20 +162,17 @@ fun MonthNavigation(
             Icon(
                 painter = painterResource(id = R.drawable.baseline_keyboard_double_arrow_left_24),
                 contentDescription = "Previous Month",
-                tint = Color.White,
-                modifier = Modifier.size(32.dp)
+                tint = Color.Black
             )
         }
 
-        // Month and Year Text
         Text(
             text = "$month $year",
-            style = MaterialTheme.typography.titleMedium.copy(fontSize = 22.sp, color = Color.White),
+            style = MaterialTheme.typography.titleMedium.copy(fontSize = 22.sp, color = Color.Black),
             modifier = Modifier.align(Alignment.Center),
             textAlign = TextAlign.Center
         )
 
-        // Next Month Button
         IconButton(
             onClick = {
                 val newIndex = (currentIndex + 1) % 12
@@ -195,8 +185,7 @@ fun MonthNavigation(
             Icon(
                 painter = painterResource(id = R.drawable.baseline_keyboard_double_arrow_right_24),
                 contentDescription = "Next Month",
-                tint = Color.White,
-                modifier = Modifier.size(32.dp)
+                tint = Color.Black
             )
         }
     }
@@ -213,39 +202,33 @@ private fun CalendarContent(
     val columns = 7
     val rows = (daysInMonth + columns - 1) / columns
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height((7 * 64).dp)
-    ) {
-        Column {
-            (0 until rows).forEach { row ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    (0 until columns).forEach { column ->
-                        val dayNumber = row * columns + column + 1
-                        if (dayNumber <= daysInMonth) {
-                            val key = dayNumber.toString()
-                            DayBox(
-                                day = dayNumber,
-                                data = dayDataMap[key],
-                                onClick = { onDayClicked(dayNumber) },
-                                modifier = Modifier.weight(1f)
-                            )
-                        } else {
-                            Spacer(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .aspectRatio(1f)
-                                    .padding(4.dp)
-                            )
-                        }
+    Column {
+        (0 until rows).forEach { row ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                (0 until columns).forEach { column ->
+                    val dayNumber = row * columns + column + 1
+                    if (dayNumber <= daysInMonth) {
+                        val key = dayNumber.toString()
+                        DayBox(
+                            day = dayNumber,
+                            data = dayDataMap[key],
+                            onClick = { onDayClicked(dayNumber) },
+                            modifier = Modifier.weight(1f)
+                        )
+                    } else {
+                        Spacer(
+                            modifier = Modifier
+                                .weight(1f)
+                                .aspectRatio(1f)
+                                .padding(4.dp)
+                        )
                     }
                 }
-                Spacer(modifier = Modifier.height(8.dp))
             }
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
@@ -267,7 +250,7 @@ private fun DayBox(
         modifier = modifier
             .aspectRatio(1f)
             .padding(4.dp)
-            .background(color = bgColor, shape = RoundedCornerShape(8.dp))
+            .background(bgColor, RoundedCornerShape(8.dp))
             .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
             .clickable(onClick = onClick)
             .shadow(4.dp, RoundedCornerShape(8.dp)),
@@ -314,10 +297,7 @@ private fun InputNameDialog(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(
-                        checked = isPaid,
-                        onCheckedChange = { onPaidToggle() }
-                    )
+                    Checkbox(checked = isPaid, onCheckedChange = { onPaidToggle() })
                     Text("Sudah Bayar?")
                 }
             }
@@ -332,7 +312,7 @@ private fun InputNameDialog(
                 Text("Batal")
             }
         },
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(16.dp)
     )
 }
 
