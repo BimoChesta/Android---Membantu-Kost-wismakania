@@ -3,18 +3,18 @@ package com.bimo0064.project.Screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bimo0064.project.R
 import com.bimo0064.project.data.DataStoreManager
 import com.bimo0064.project.model.DayData
 
@@ -35,43 +35,52 @@ fun RiwayatListrik() {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFFF2FAFB))
             .padding(16.dp)
-            .background(Color(0xFFE6F0F2))
     ) {
+        Text(
+            text = "Riwayat Penggunaan Listrik",
+            style = MaterialTheme.typography.titleLarge.copy(color = Color(0xFF197278)),
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+
         if (dayDataMap.isNotEmpty()) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = "Riwayat Input:",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color(0xFF2B9E9E)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
                 dayDataMap.entries.sortedBy { it.key.toInt() }.forEach { (day, data) ->
                     Card(
-                        modifier = Modifier.padding(vertical = 4.dp),
                         shape = RoundedCornerShape(12.dp),
-                        elevation = CardDefaults.elevatedCardElevation(4.dp)
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(4.dp),
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                        ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
                             Text(
-                                text = "Tanggal $day - ${data.name} (${if (data.isPaid) "Sudah Bayar" else "Belum Bayar"})",
+                                text = "Tanggal $day",
+                                style = MaterialTheme.typography.titleSmall
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "${data.name} - ${if (data.isPaid) "✅ Sudah Bayar" else "❌ Belum Bayar"}",
                                 fontSize = 14.sp,
-                                color = Color.Gray
+                                color = if (data.isPaid) Color(0xFF2E7D32) else Color(0xFFD32F2F)
                             )
                         }
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
+        } else {
+            Text(
+                text = "Belum ada data untuk bulan ini.",
+                color = Color.Gray,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp),
+                textAlign = TextAlign.Center
+            )
         }
 
         ListrikMonthNavigation(
@@ -84,6 +93,7 @@ fun RiwayatListrik() {
         )
     }
 }
+
 
 @Composable
 fun ListrikMonthNavigation(
@@ -100,48 +110,47 @@ fun ListrikMonthNavigation(
 
     val currentIndex = months.indexOf(month)
 
-    Box(
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp)
-            .padding(horizontal = 16.dp)
+            .padding(vertical = 12.dp)
+            .background(Color.White, RoundedCornerShape(16.dp))
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .shadow(2.dp, RoundedCornerShape(16.dp))
     ) {
-        IconButton(
-            onClick = {
-                val newIndex = (currentIndex - 1 + 12) % 12
-                val newMonth = months[newIndex]
-                val newYear = if (newIndex == 11) year - 1 else year
-                onMonthYearChange(newMonth, newYear)
-            },
-            modifier = Modifier.align(Alignment.CenterStart)
-        ) {
+        IconButton(onClick = {
+            val newIndex = (currentIndex - 1 + 12) % 12
+            val newMonth = months[newIndex]
+            val newYear = if (newIndex == 11) year - 1 else year
+            onMonthYearChange(newMonth, newYear)
+        }) {
             Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Previous Month",
-                tint = Color.Black
+                painter = painterResource(id = R.drawable.baseline_keyboard_double_arrow_left_24),
+                contentDescription = "Bulan Sebelumnya",
+                tint = Color.Unspecified,
+                modifier = Modifier.size(32.dp)
             )
         }
 
         Text(
             text = "$month $year",
             style = MaterialTheme.typography.titleMedium.copy(fontSize = 20.sp),
-            modifier = Modifier.align(Alignment.Center),
             textAlign = TextAlign.Center
         )
 
-        IconButton(
-            onClick = {
-                val newIndex = (currentIndex + 1) % 12
-                val newMonth = months[newIndex]
-                val newYear = if (newIndex == 0) year + 1 else year
-                onMonthYearChange(newMonth, newYear)
-            },
-            modifier = Modifier.align(Alignment.CenterEnd)
-        ) {
+        IconButton(onClick = {
+            val newIndex = (currentIndex + 1) % 12
+            val newMonth = months[newIndex]
+            val newYear = if (newIndex == 0) year + 1 else year
+            onMonthYearChange(newMonth, newYear)
+        }) {
             Icon(
-                imageVector = Icons.Default.ArrowForward,
-                contentDescription = "Next Month",
-                tint = Color.Black
+                painter = painterResource(id = R.drawable.baseline_keyboard_double_arrow_right_24),
+                contentDescription = "Bulan Berikutnya",
+                tint = Color.Unspecified,
+                modifier = Modifier.size(32.dp)
             )
         }
     }

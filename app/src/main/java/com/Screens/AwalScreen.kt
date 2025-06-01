@@ -29,7 +29,7 @@ fun AwalScreen(navController: NavHostController) {
             Text(
                 text = "Selamat Datang\nWisma Kania",
                 style = MaterialTheme.typography.headlineMedium.copy(
-                    fontSize = 32.sp, // Sedikit lebih besar
+                    fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF2B9E9E)
                 ),
