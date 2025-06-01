@@ -83,7 +83,7 @@ fun AppEntryPoint() {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavGraph(navController: NavHostController, dataStoreManager: DataStoreManager) {
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = "home") {
 
         composable("awalan") {
             AwalScreen(navController)
