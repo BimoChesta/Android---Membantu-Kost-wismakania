@@ -83,7 +83,7 @@ fun AppEntryPoint() {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavGraph(navController: NavHostController, dataStoreManager: DataStoreManager) {
-    NavHost(navController = navController, startDestination = "awalan") {
+    NavHost(navController = navController, startDestination = "login") {
 
         composable("awalan") {
             AwalScreen(navController)
@@ -144,7 +144,7 @@ fun AppNavGraph(navController: NavHostController, dataStoreManager: DataStoreMan
         }
 
         composable("listrik") {
-            KelolaDataListrikScreen()
+            KelolaDataListrikScreen(onBackPressed = { navController.popBackStack() })
         }
 
         composable("aturan") {
