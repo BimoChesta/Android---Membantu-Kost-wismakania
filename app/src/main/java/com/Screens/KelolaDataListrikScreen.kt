@@ -25,6 +25,7 @@ import com.bimo0064.project.data.DataStoreManager
 import com.bimo0064.project.model.DayData
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KelolaDataListrikScreen(onBackPressed: () -> Unit) {
     val context = LocalContext.current
@@ -45,90 +46,91 @@ fun KelolaDataListrikScreen(onBackPressed: () -> Unit) {
         dayDataMap.putAll(dataStoreManager.loadDayData(month, year.toString()))
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(Color(0xFFE0F7FA), Color(0xFFE1E1E1))))
-    ) {
-        Column(
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Catatan Pembayaran Listrik") },
+                navigationIcon = {
+                    IconButton(onClick = onBackPressed) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF2B9E9E),
+                    titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White
+                )
+            )
+        }
+    ) { paddingValues ->
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(paddingValues)
+                .background(Brush.verticalGradient(listOf(Color(0xFFE0F7FA), Color(0xFFE1E1E1))))
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 16.dp)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
             ) {
-                IconButton(onClick = onBackPressed) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.Black
-                    )
-                }
+                CalendarContent(
+                    month = month,
+                    year = year.toString(),
+                    dayDataMap = dayDataMap,
+                    onDayClicked = { day ->
+                        selectedDay = day
+                        inputName = dayDataMap[day.toString()]?.name ?: ""
+                        isPaid = dayDataMap[day.toString()]?.isPaid ?: false
+                        showDialog = true
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                MonthNavigation(
+                    month = month,
+                    year = year,
+                    onMonthYearChange = { newMonth, newYear ->
+                        month = newMonth
+                        year = newYear
+                    }
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
                 Text(
-                    text = "Kelola Data Listrik",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        color = Color.Black,
-                        fontSize = 24.sp
-                    ),
-                    modifier = Modifier.weight(1f),
+                    text = "Klik Salah satu Tanggal",
+                    style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray),
+                    modifier = Modifier.padding(16.dp),
                     textAlign = TextAlign.Center
                 )
             }
 
-            CalendarContent(
-                month = month,
-                year = year.toString(),
-                dayDataMap = dayDataMap,
-                onDayClicked = { day ->
-                    selectedDay = day
-                    inputName = dayDataMap[day.toString()]?.name ?: ""
-                    isPaid = dayDataMap[day.toString()]?.isPaid ?: false
-                    showDialog = true
-                }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            MonthNavigation(
-                month = month,
-                year = year,
-                onMonthYearChange = { newMonth, newYear ->
-                    month = newMonth
-                    year = newYear
-                }
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Text(
-                text = "Tap on a date to enter details",
-                style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray),
-                modifier = Modifier.padding(16.dp),
-                textAlign = TextAlign.Center
-            )
-        }
-
-        if (showDialog && selectedDay != null) {
-            InputNameDialog(
-                selectedDay = selectedDay!!,
-                inputName = inputName,
-                isPaid = isPaid,
-                onNameChanged = { inputName = it },
-                onPaidToggle = { isPaid = !isPaid },
-                onConfirm = {
-                    if (inputName.isNotBlank()) {
-                        val key = selectedDay.toString()
-                        dayDataMap[key] = DayData(inputName, isPaid)
-                        scope.launch {
-                            dataStoreManager.saveDayData(month, year.toString(), dayDataMap)
+            if (showDialog && selectedDay != null) {
+                InputNameDialog(
+                    selectedDay = selectedDay!!,
+                    inputName = inputName,
+                    isPaid = isPaid,
+                    onNameChanged = { inputName = it },
+                    onPaidToggle = { isPaid = !isPaid },
+                    onConfirm = {
+                        if (inputName.isNotBlank()) {
+                            val key = selectedDay.toString()
+                            dayDataMap[key] = DayData(inputName, isPaid)
+                            scope.launch {
+                                dataStoreManager.saveDayData(month, year.toString(), dayDataMap)
+                            }
                         }
-                    }
-                    showDialog = false
-                },
-                onDismiss = { showDialog = false }
-            )
+                        showDialog = false
+                    },
+                    onDismiss = { showDialog = false }
+                )
+            }
         }
     }
 }
@@ -199,17 +201,17 @@ private fun CalendarContent(
     onDayClicked: (Int) -> Unit
 ) {
     val daysInMonth = getDaysInMonth(month, year)
-    val columns = 7
-    val rows = (daysInMonth + columns - 1) / columns
+    val columns = 5
+    val totalCells = 35 // 7 rows x 5 columns
 
     Column {
-        (0 until rows).forEach { row ->
+        (0 until totalCells step columns).forEach { startIndex ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                (0 until columns).forEach { column ->
-                    val dayNumber = row * columns + column + 1
+                (0 until columns).forEach { offset ->
+                    val dayNumber = startIndex + offset + 1
                     if (dayNumber <= daysInMonth) {
                         val key = dayNumber.toString()
                         DayBox(
@@ -219,7 +221,8 @@ private fun CalendarContent(
                             modifier = Modifier.weight(1f)
                         )
                     } else {
-                        Spacer(
+                        // Kosongkan slot
+                        Box(
                             modifier = Modifier
                                 .weight(1f)
                                 .aspectRatio(1f)
@@ -232,6 +235,7 @@ private fun CalendarContent(
         }
     }
 }
+
 
 @Composable
 private fun DayBox(

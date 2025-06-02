@@ -1,9 +1,12 @@
 package com.bimo0064.project.Screens
 
+import android.net.Uri
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -28,10 +31,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 import com.bimo0064.project.data.DataStoreManager
 import com.bimo0064.project.model.Pembayaran
 
@@ -53,7 +59,7 @@ fun KasScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Riwayat Kas") },
+                title = { Text("Data Kas") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -74,7 +80,7 @@ fun KasScreen(
                 .padding(16.dp)
         ) {
             Text(
-                text = "Riwayat Pembayaran",
+                text = "Riwayat Pembayaran Kas",
                 fontSize = 20.sp,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
                 color = Color.Black,
@@ -93,9 +99,23 @@ fun KasScreen(
                         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text(text = "Nama: ${pembayaran.nama}")
-                            Text(text = "Kamar: ${pembayaran.kamar}")
-                            Text(text = "Status: ${pembayaran.bukti}")
+                            Text("Nama: ${pembayaran.nama}")
+                            Text("Kamar: ${pembayaran.kamar}")
+                            Text("Status: ${pembayaran.bukti}")
+
+                            pembayaran.imageUri?.let { uriStr ->
+                                val uri = Uri.parse(uriStr)
+                                Image(
+                                    painter = rememberAsyncImagePainter(uri),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(180.dp)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .padding(top = 8.dp),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
                         }
                     }
                 }
