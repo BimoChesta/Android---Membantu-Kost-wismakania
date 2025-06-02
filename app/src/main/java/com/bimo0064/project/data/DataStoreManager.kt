@@ -82,4 +82,10 @@ class DataStoreManager(private val context: Context) {
     private fun generateKey(month: String, year: String): String {
         return "${month}_${year}"
     }
+
+    suspend fun clearUser() {
+        context.dataStore.edit { preferences ->
+            preferences.remove(userKey)
+        }
+    }
 }

@@ -3,9 +3,9 @@ package com.bimo0064.project.Screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -23,7 +23,9 @@ import androidx.navigation.NavHostController
 import com.bimo0064.project.R
 import com.bimo0064.project.data.DataStoreManager
 import com.bimo0064.project.model.User
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
@@ -31,6 +33,8 @@ fun HomeScreen(
 ) {
     var saldo by remember { mutableStateOf(0) }
     var user by remember { mutableStateOf<User?>(null) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         saldo = dataStoreManager.loadBalance()
@@ -40,108 +44,153 @@ fun HomeScreen(
     val isAdmin = user?.username == "admin" && user?.password == "1234"
     val userName = if (isAdmin) "Admin" else user?.name ?: "Pengguna"
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF6F9F9)
-    ) {
-        Column(
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Beranda") },
+                actions = {
+                    IconButton(onClick = { showLogoutDialog = true }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_account_circle_24),
+                            contentDescription = "Logout"
+                        )
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+                .padding(paddingValues),
+            color = Color(0xFFF6F9F9)
         ) {
-            // Greeting
-            Column {
-                Text(
-                    text = "Selamat Datang,",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Gray
-                )
-                Text(
-                    text = userName,
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            }
-
-            // Balance Card
-            Card(
-                shape = RoundedCornerShape(20.dp),
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
+                // Greeting
+                Column {
+                    Text(
+                        text = "Selamat Datang,",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.Gray
+                    )
+                    Text(
+                        text = userName,
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                }
+
+                // Balance Card
+                Card(
+                    shape = RoundedCornerShape(20.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.dompet),
+                            contentDescription = "Dompet",
+                            modifier = Modifier.size(48.dp)
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column {
+                            Text(
+                                text = "Uang Kas",
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                            )
+                            Text(
+                                text = "Rp. $saldo",
+                                style = MaterialTheme.typography.titleMedium.copy(color = Color(0xFF2E7D32))
+                            )
+                        }
+                    }
+                }
+
+                // Menu Horizontal
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(20.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.dompet),
-                        contentDescription = "Dompet",
-                        modifier = Modifier.size(48.dp)
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Column {
-                        Text(
-                            text = "Uang Kas",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                        )
-                        Text(
-                            text = "Rp. $saldo",
-                            style = MaterialTheme.typography.titleMedium.copy(color = Color(0xFF2E7D32))
+                    MenuButton(R.drawable.petir, "Listrik", navController, "listrik")
+                    MenuButton(R.drawable.aturan, "Aturan", navController, "aturan")
+                    MenuButton(R.drawable.datakas, "Data Kas", navController, "kas")
+                    MenuButton(R.drawable.perpanjangkost, "Perpanjang", navController, "perpanjangkost")
+                    MenuButton(R.drawable.home, "Info Kost", navController, "informasi")
+                }
+
+                // QR Button (Floating Style)
+                Box(
+                    contentAlignment = Alignment.CenterEnd,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(CircleShape)
+                            .background(Color.White)
+                            .shadow(6.dp, shape = CircleShape)
+                            .clickable { navController.navigate("qr_detail") },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.scan),
+                            contentDescription = "QR Code",
+                            modifier = Modifier.size(50.dp)
                         )
                     }
                 }
             }
+        }
 
-            // Menu Grid
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxHeight(0.6f)
-            ) {
-                item { MenuIcon(R.drawable.petir, "Listrik", navController, "listrik") }
-                item { MenuIcon(R.drawable.aturan, "Aturan", navController, "aturan") }
-                item { MenuIcon(R.drawable.datakas, "Data Kas", navController, "kas") }
-                item { MenuIcon(R.drawable.perpanjangkost, "Perpanjang", navController, "perpanjangkost") }
-                item { MenuIcon(R.drawable.home, "Info Kost", navController, "informasi") }
-            }
-
-            // QR Button (Floating Style)
-            Box(
-                contentAlignment = Alignment.CenterEnd,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(CircleShape)
-                        .background(Color.White)
-                        .shadow(6.dp, shape = CircleShape)
-                        .clickable { navController.navigate("qr_detail") },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.scan),
-                        contentDescription = "QR Code",
-                        modifier = Modifier.size(50.dp)
-                    )
+        if (showLogoutDialog) {
+            AlertDialog(
+                onDismissRequest = { showLogoutDialog = false },
+                title = { Text("Konfirmasi Logout") },
+                text = { Text("Anda ingin log out?") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        scope.launch {
+                            dataStoreManager.clearUser()
+                            navController.navigate("login") {
+                                popUpTo("home") { inclusive = true }
+                            }
+                        }
+                        showLogoutDialog = false
+                    }) {
+                        Text("Ya")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showLogoutDialog = false }) {
+                        Text("Batal")
+                    }
                 }
-            }
+            )
         }
     }
 }
 
 @Composable
-fun MenuIcon(iconRes: Int, title: String, navController: NavHostController, destination: String) {
+fun MenuButton(iconRes: Int, title: String, navController: NavHostController, destination: String) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
-            .aspectRatio(1f)
+            .width(120.dp)
+            .height(120.dp)
             .clickable { navController.navigate(destination) }
             .shadow(4.dp, RoundedCornerShape(16.dp))
     ) {

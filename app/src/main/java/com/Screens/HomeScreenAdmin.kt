@@ -97,10 +97,10 @@ fun HomeScreenAdmin(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxHeight(0.6f)
             ) {
-                item { MenuIcon(R.drawable.petir, "Riwayat Listrik", navController, "riwayatlistrik") }
-                item { MenuIcon(R.drawable.kas, "Ubah Kas", navController, "Cek_saldo") }
-                item { MenuIcon(R.drawable.perpanjangkost, "Riwayat Perpanjang", navController, "dataPerpanjangkost") }
-                item { MenuIcon(R.drawable.kas, "Kas", navController, "kas") }
+                item { MenuIconAdmin(R.drawable.petir, "Riwayat Listrik", navController, "riwayatlistrik") }
+                item { MenuIconAdmin(R.drawable.kas, "Ubah Kas", navController, "Cek_saldo") }
+                item { MenuIconAdmin(R.drawable.perpanjangkost, "Riwayat Perpanjang", navController, "dataPerpanjangkost") }
+                item { MenuIconAdmin(R.drawable.kas, "Kas", navController, "kas") }
             }
 
             // QR Button
