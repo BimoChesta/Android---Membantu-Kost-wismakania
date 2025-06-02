@@ -42,7 +42,7 @@ fun PerpanjangKostScreen(navController: NavHostController) {
     var expandedRoom by remember { mutableStateOf(false) }
     var expandedMonth by remember { mutableStateOf(false) }
 
-    val roomOptions = (1..12).map { it.toString() }
+    val roomOptions = (1..7).map { it.toString() }
     val monthOptions = listOf(
         "Januari", "Februari", "Maret", "April", "Mei", "Juni",
         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
@@ -203,7 +203,7 @@ fun PerpanjangKostScreen(navController: NavHostController) {
                     .fillMaxWidth()
                     .height(50.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF388E3C)) // Hijau
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE0E0E0)) // Hijau
             ) {
                 Text("Submit", color = Color.White)
             }

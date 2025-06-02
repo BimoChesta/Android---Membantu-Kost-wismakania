@@ -1,6 +1,7 @@
 package com.bimo0064.project.Screens
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -13,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,28 +36,32 @@ import kotlinx.coroutines.launch
 @Composable
 fun QrDetailScreen(navController: NavHostController, dataStoreManager: DataStoreManager) {
     var nama by remember { mutableStateOf("") }
-    var kamar by remember { mutableStateOf("1") }
-    var sudahBayar by remember { mutableStateOf(false) }
+    var selectedRoom by remember { mutableStateOf("1") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-    var expanded by remember { mutableStateOf(false) }
+    var sudahBayar by remember { mutableStateOf(false) }
+    var expandedRoom by remember { mutableStateOf(false) }
 
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val imageLauncher = rememberLauncherForActivityResult(
+    val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ) { uri -> imageUri = uri }
+    ) { uri: Uri? -> imageUri = uri }
+
+    val roomOptions = (1..7).map { it.toString() }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Detail Pembayaran") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color(0xFF2B9E9E),
-                    titleContentColor = Color.White
+                    titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White
                 )
             )
         }
@@ -63,132 +69,134 @@ fun QrDetailScreen(navController: NavHostController, dataStoreManager: DataStore
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize()
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            InfoCard(title = "Nama", content = nama, onValueChange = { nama = it })
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Dropdown kamar
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color.White)
-                    .padding(16.dp)
+            // Kartu Form
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(4.dp)
             ) {
-                Text(
-                    text = "Kamar",
-                    color = Color(0xFF2B9E9E),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Box {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     OutlinedTextField(
-                        value = kamar,
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Kamar") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { expanded = true }
+                        value = nama,
+                        onValueChange = { nama = it },
+                        label = { Text("Nama") },
+                        modifier = Modifier.fillMaxWidth()
                     )
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        (1..7).forEach { number ->
-                            DropdownMenuItem(
-                                text = { Text("Kamar $number") },
-                                onClick = {
-                                    kamar = number.toString()
-                                    expanded = false
+
+                    // Dropdown kamar
+                    Box {
+                        OutlinedTextField(
+                            value = "Kamar $selectedRoom",
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Pilih Kamar") },
+                            trailingIcon = {
+                                IconButton(onClick = { expandedRoom = true }) {
+                                    Icon(Icons.Filled.ArrowDropDown, contentDescription = null)
                                 }
-                            )
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        DropdownMenu(
+                            expanded = expandedRoom,
+                            onDismissRequest = { expandedRoom = false }
+                        ) {
+                            roomOptions.forEach { room ->
+                                DropdownMenuItem(
+                                    text = { Text("Kamar $room") },
+                                    onClick = {
+                                        selectedRoom = room
+                                        expandedRoom = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    // Checkbox Sudah Bayar
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = sudahBayar,
+                            onCheckedChange = { sudahBayar = it }
+                        )
+                        Text("Sudah Bayar", modifier = Modifier.padding(start = 8.dp))
+                    }
+
+                    // Tombol pilih gambar
+                    Button(
+                        onClick = { imagePickerLauncher.launch("image/*") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2B9E9E))
+                    ) {
+                        Text("Upload Bukti", color = Color.White)
+                    }
+
+                    // Preview gambar
+                    if (imageUri != null) {
+                        Image(
+                            painter = rememberAsyncImagePainter(imageUri),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                                .background(Color.LightGray, shape = RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                                .background(Color(0xFFE0E0E0), shape = RoundedCornerShape(8.dp)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("Belum ada gambar dipilih", color = Color.DarkGray)
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Upload bukti gambar
-            if (imageUri != null) {
-                Image(
-                    painter = rememberAsyncImagePainter(imageUri),
-                    contentDescription = "Bukti Transfer",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color.LightGray),
-                    contentScale = ContentScale.Crop
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
-            Button(
-                onClick = { imageLauncher.launch("image/*") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            ) {
-                Text("Upload Bukti")
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Checkbox Sudah Bayar
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .padding(vertical = 8.dp)
-                    .toggleable(
-                        value = sudahBayar,
-                        onValueChange = { sudahBayar = it }
-                    )
-            ) {
-                Checkbox(
-                    checked = sudahBayar,
-                    onCheckedChange = { sudahBayar = it }
-                )
-                Text(text = "Sudah Bayar", modifier = Modifier.padding(start = 8.dp))
-            }
-
             // Tombol Simpan
             Button(
                 onClick = {
-                    if (nama.isNotBlank() && kamar.isNotBlank()) {
+                    if (nama.isNotBlank() && imageUri != null) {
                         val pembayaran = Pembayaran(
                             nama = nama,
-                            kamar = kamar,
+                            kamar = selectedRoom,
                             bukti = if (sudahBayar) "Sudah Bayar" else "Belum Bayar",
-                            imageUri = imageUri?.toString()
+                            imageUri = imageUri.toString()
                         )
                         scope.launch {
                             dataStoreManager.savePayment(pembayaran)
-                            nama = ""
-                            kamar = "1"
-                            sudahBayar = false
-                            imageUri = null
-                            navController.navigateUp()
+                            Toast.makeText(context, "Data tersimpan!", Toast.LENGTH_SHORT).show()
+                            navController.popBackStack()
                         }
+                    } else {
+                        Toast.makeText(context, "Isi nama dan upload gambar!", Toast.LENGTH_SHORT).show()
                     }
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
                 modifier = Modifier
-                    .padding(top = 16.dp)
-                    .fillMaxWidth(0.6f)
+                    .fillMaxWidth()
+                    .height(50.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2B9E9E))
             ) {
-                Text(text = "Simpan", color = Color.White)
+                Text("Simpan", color = Color.White)
             }
         }
     }
 }
+
 
 @Composable
 fun InfoCard(title: String, content: String, onValueChange: (String) -> Unit = {}) {
