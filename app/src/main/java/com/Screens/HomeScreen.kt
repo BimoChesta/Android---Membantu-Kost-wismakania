@@ -44,60 +44,58 @@ fun HomeScreen(
     val isAdmin = user?.username == "admin" && user?.password == "1234"
     val userName = if (isAdmin) "Admin" else user?.name ?: "Pengguna"
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Beranda") },
-                actions = {
-                    IconButton(onClick = { showLogoutDialog = true }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_account_circle_24),
-                            contentDescription = "Logout"
-                        )
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
-        Surface(
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Color(0xFFF6F9F9)
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            color = Color(0xFFF6F9F9)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
+            // Icon account di kanan atas
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
             ) {
-                // Greeting
-                Column {
-                    Text(
-                        text = "Selamat Datang,",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.Gray
-                    )
-                    Text(
-                        text = userName,
-                        style = MaterialTheme.typography.headlineMedium.copy(
-                            fontWeight = FontWeight.Bold
-                        )
+                IconButton(onClick = { showLogoutDialog = true }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_account_circle_24),
+                        contentDescription = "Logout"
                     )
                 }
+            }
 
-                // Balance Card
-                Card(
-                    shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+            // Greeting
+            Column {
+                Text(
+                    text = "Selamat Datang,",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.Gray
+                )
+                Text(
+                    text = userName,
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+
+            // Balance + Scan QR
+            Card(
+                shape = RoundedCornerShape(20.dp),
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = Color.White)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
                             painter = painterResource(id = R.drawable.dompet),
                             contentDescription = "Dompet",
@@ -115,43 +113,34 @@ fun HomeScreen(
                             )
                         }
                     }
-                }
 
-                // Menu Horizontal
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    MenuButton(R.drawable.petir, "Listrik", navController, "listrik")
-                    MenuButton(R.drawable.aturan, "Aturan", navController, "aturan")
-                    MenuButton(R.drawable.datakas, "Data Kas", navController, "kas")
-                    MenuButton(R.drawable.perpanjangkost, "Perpanjang", navController, "perpanjangkost")
-                    MenuButton(R.drawable.home, "Info Kost", navController, "informasi")
-                }
-
-                // QR Button (Floating Style)
-                Box(
-                    contentAlignment = Alignment.CenterEnd,
-                    modifier = Modifier.fillMaxSize()
-                ) {
+                    // Scan QR
                     Box(
                         modifier = Modifier
-                            .size(100.dp)
+                            .size(60.dp)
                             .clip(CircleShape)
-                            .background(Color.White)
-                            .shadow(6.dp, shape = CircleShape)
+                            .background(Color(0xFFF0F0F0))
                             .clickable { navController.navigate("qr_detail") },
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.scan),
                             contentDescription = "QR Code",
-                            modifier = Modifier.size(50.dp)
+                            modifier = Modifier.size(30.dp)
                         )
                     }
                 }
+            }
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                MenuButton(R.drawable.petir, "Listrik", navController, "listrik")
+                MenuButton(R.drawable.aturan, "Aturan", navController, "aturan")
+                MenuButton(R.drawable.datakas, "Data Kas", navController, "kas")
+                MenuButton(R.drawable.perpanjangkost, "Perpanjang", navController, "perpanjangkost")
+                MenuButton(R.drawable.home, "Info Kost", navController, "informasi")
             }
         }
 
@@ -183,35 +172,37 @@ fun HomeScreen(
     }
 }
 
+
 @Composable
 fun MenuButton(iconRes: Int, title: String, navController: NavHostController, destination: String) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
-            .width(120.dp)
-            .height(120.dp)
+            .fillMaxWidth()
+            .height(80.dp)
             .clickable { navController.navigate(destination) }
-            .shadow(4.dp, RoundedCornerShape(16.dp))
+            .shadow(5.dp, RoundedCornerShape(16.dp))
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(12.dp)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 16.dp)
         ) {
             Image(
                 painter = painterResource(id = iconRes),
                 contentDescription = title,
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier
+                    .size(32.dp)
+                    .padding(end = 16.dp)
             )
-            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = title,
-                style = MaterialTheme.typography.labelLarge.copy(
-                    fontWeight = FontWeight.Medium,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp
                 )
             )
         }
     }
 }
+
